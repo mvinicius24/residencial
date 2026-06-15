@@ -1,9 +1,9 @@
 {
-  "short_name": "Residencial",
+  "short_name": "Res. Maria de Lourdes",
   "name": "Residencial Maria de Lourdes",
   "icons": [
     {
-      "src": "icon.png",
+      "src": "icon2.png",
       "type": "image/png",
       "sizes": "512x512",
       "purpose": "any maskable"
