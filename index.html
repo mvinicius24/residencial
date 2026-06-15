@@ -309,7 +309,7 @@
         const SUPABASE_URL = "https://pqltnhmdsbhmuhdokqav.supabase.co";
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxbHRuaG1kc2JobXVoZG9rcWF2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1MjQwODMsImV4cCI6MjA5NzEwMDA4M30.AQiZXPHB7JDW6_oFmtLNMaAHSTvTFVRCaDiZWvh-1-M";
 
-        // Inicializa o cliente oficial do Supabase necessário para o Realtime
+        // Inicializa o cliente oficial do Supabase
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         function obterMesAnoAtual() {
@@ -320,6 +320,7 @@
         let mesSelecionadoAtual = localStorage.getItem('mesSelecionadoAtual') || obterMesAnoAtual(); 
         const SENHA_CORRETA = "1234";
         let lancamentos = [];
+        let listaFundosIniciais = []; // Lista carregada do banco do Supabase
 
         function setStatusCarregando(bool) {
             const statusBox = document.getElementById('cloudStatus');
@@ -332,43 +333,49 @@
             }
         }
 
-        // Busca inicial dos dados
+        // Busca inicial de Lançamentos e de Configurações de Caixa da Nuvem
         async function carregarDadosDaNuvem() {
             setStatusCarregando(true);
-            const { data, error } = await _supabase
-                .from('lancamentos')
-                .select('*');
             
-            if (!error && data) {
-                lancamentos = data;
-                render();
-            }
+            // Buscar lançamentos
+            const { data: dataLanc, error: errorLanc } = await _supabase.from('lancamentos').select('*');
+            if (!errorLanc && dataLanc) lancamentos = dataLanc;
+
+            // Buscar fundos iniciais centralizados
+            const { data: dataCaixa, error: errorCaixa } = await _supabase.from('configuracoes_caixa').select('*');
+            if (!errorCaixa && dataCaixa) listaFundosIniciais = dataCaixa;
+            
+            render();
             setStatusCarregando(false);
         }
 
-        // Configuração da Escuta em Tempo Real (Realtime)
+        // Configuração da Escuta em Tempo Real (Realtime) para ambas as tabelas
         function escutarMudancasEmTempoReal() {
+            // Canal para lançamentos
             _supabase
-                .channel('custom-filter-channel')
-                .on(
-                    'postgres_changes',
-                    { event: '*', schema: 'public', table: 'lancamentos' },
-                    (payload) => {
-                        console.log('Mudança detectada no banco:', payload);
-                        
-                        if (payload.eventType === 'INSERT') {
-                            lancamentos.push(payload.new);
-                        } else if (payload.eventType === 'UPDATE') {
-                            const index = lancamentos.findIndex(l => l.id === payload.new.id);
-                            if (index !== -1) lancamentos[index] = payload.new;
-                        } else if (payload.eventType === 'DELETE') {
-                            lancamentos = lancamentos.filter(l => l.id !== payload.old.id);
-                        }
-                        
-                        render(); // Atualiza a tela de todo mundo na hora!
+                .channel('canal-lancamentos')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'lancamentos' }, (payload) => {
+                    if (payload.eventType === 'INSERT') lancamentos.push(payload.new);
+                    else if (payload.eventType === 'UPDATE') {
+                        const idx = lancamentos.findIndex(l => l.id === payload.new.id);
+                        if (idx !== -1) lancamentos[idx] = payload.new;
+                    } else if (payload.eventType === 'DELETE') {
+                        lancamentos = lancamentos.filter(l => l.id !== payload.old.id);
                     }
-                )
-                .subscribe();
+                    render();
+                }).subscribe();
+
+            // Canal para fundo inicial (configuracoes_caixa)
+            _supabase
+                .channel('canal-caixa')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'configuracoes_caixa' }, (payload) => {
+                    if (payload.eventType === 'INSERT') listaFundosIniciais.push(payload.new);
+                    else if (payload.eventType === 'UPDATE') {
+                        const idx = listaFundosIniciais.findIndex(c => c.id === payload.new.id);
+                        if (idx !== -1) listaFundosIniciais[idx] = payload.new;
+                    }
+                    render(); // Atualiza a tela de todos em tempo real na hora!
+                }).subscribe();
         }
 
         async function fazerUploadFoto(file) {
@@ -401,19 +408,41 @@
             openModal('caixaModal');
         }
 
-        function saveConfig(e) {
+        // Salva o Fundo Inicial DIRETAMENTE no banco do Supabase
+        async function saveConfig(e) {
             e.preventDefault();
+            setStatusCarregando(true);
             let valorNovo = parseFloat(document.getElementById('cfgCaixaValor').value) || 0;
-            let chavesCaixa = JSON.parse(localStorage.getItem('caixas_por_mes')) || {};
-            chavesCaixa[mesSelecionadoAtual] = valorNovo;
-            localStorage.setItem('caixas_por_mes', JSON.stringify(chavesCaixa));
+            
+            // Verifica se já existe um registro para este mês na lista local
+            const registroExistente = listaFundosIniciais.find(c => c.mes_ano === mesSelecionadoAtual);
+
+            if (registroExistente) {
+                // Atualiza registro existente
+                await _supabase
+                    .from('configuracoes_caixa')
+                    .update({ valor_fundo_inicial: valorNovo })
+                    .eq('id', registroExistente.id);
+            } else {
+                // Cria um novo registro para o mês
+                await _supabase
+                    .from('configuracoes_caixa')
+                    .insert([{ mes_ano: mesSelecionadoAtual, valor_fundo_inicial: valorNovo }]);
+            }
+
             closeModal('caixaModal');
+            // Recarrega os dados de caixa para garantir alinhamento perfeito
+            const { data } = await _supabase.from('configuracoes_caixa').select('*');
+            if (data) listaFundosIniciais = data;
+            
             render();
+            setStatusCarregando(false);
         }
 
+        // Lê o valor do fundo vindo do banco do Supabase (senão achar, adota 0.00 como base padrão)
         function obterCaixaBaseDoMes(anoMes) {
-            let chavesCaixa = JSON.parse(localStorage.getItem('caixas_por_mes')) || {};
-            return chavesCaixa[anoMes] !== undefined ? parseFloat(chavesCaixa[anoMes]) : 932.46;
+            const registro = listaFundosIniciais.find(c => c.mes_ano === anoMes);
+            return registro ? parseFloat(registro.valor_fundo_inicial) : 0.00;
         }
 
         function toggleAcesso() {
@@ -606,7 +635,7 @@
         
         function formatarPeriodoTexto(anoMesStr) {
             if(!anoMesStr || !anoMesStr.includes('-')) return "GESTÃO FINANCEIRA";
-            const mesesExtenso = ["JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL", "MAIO", "JUNHO", "JULHO", "AGOSTO", "SETEMBRO", "OUTUBRO", "CONECTANDO...", "DEZEMBRO"];
+            const mesesExtenso = ["JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL", "MAIO", "JUNHO", "JULHO", "AGOSTO", "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO"];
             const partes = anoMesStr.split('-');
             return `BALANÇO FINANCEIRO - ${mesesExtenso[parseInt(partes[1], 10) - 1]}/${partes[0]}`;
         }
@@ -656,15 +685,12 @@
     </script>
 
     <script>
-        // Script inteligente para forçar o aviso de instalação do PWA no celular
+        // Script inteligente para o aviso de instalação do PWA no celular
         let eventoInstalacao;
         window.addEventListener('beforeinstallprompt', (e) => {
-            // Impede que o navegador mostre o pop-up nativo feio imediatamente
             e.preventDefault();
-            // Guarda o gancho para disparar quando clicarem no botão
             eventoInstalacao = e;
             
-            // Renderiza um banner azul elegante no topo após 3 segundos
             setTimeout(() => {
                 if(!localStorage.getItem('pwa_instalado_ignorado')) {
                     const barraInstalar = document.createElement('div');
@@ -686,9 +712,6 @@
             if (eventoInstalacao) {
                 eventoInstalacao.prompt();
                 const { outcome } = await eventoInstalacao.userChoice;
-                if (outcome === 'accepted') {
-                    console.log('O morador aceitou instalar o PWA.');
-                }
                 document.getElementById('bannerPWA').remove();
                 eventoInstalacao = null;
             }
