@@ -1,0 +1,17 @@
+{
+  "short_name": "Residencial",
+  "name": "Residencial Maria de Lourdes",
+  "icons": [
+    {
+      "src": "https://photos.fife.usercontent.google.com/pw/AP1GczOs2i6WCAz8fRsyHwHGAC0T4erLaGZlvAnwsSvyjVd2HeHJvlrWnwA7=w873-h873-s-no-gm?authuser=0",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "./index.html",
+  "background_color": "#F8FAFC",
+  "theme-color": "#0A369D",
+  "display": "standalone",
+  "orientation": "portrait"
+}
