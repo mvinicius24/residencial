@@ -1,721 +1,1454 @@
 <!DOCTYPE html>
+
 <html lang="pt-BR">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Residencial Maria de Lourdes - Supabase Realtime</title>
-    <link rel="manifest" href="manifest.json?v=6">
-    <meta name="theme-color" content="#0A369D">
-    
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    
-    <style>
-        :root {
-            --primary-color: #1E293B;
-            --accent-color: #0A369D;
-            --entrada-color: #0284C7;
-            --saida-color: #EF4444;
-            --bg-color: #F8FAFC;
-            --card-bg: #FFFFFF;
-            --border-color: #E2E8F0;
-            --text-secondary: #64748B;
-        }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Roboto', sans-serif; }
-        body { background-color: #E2E8F0; color: var(--primary-color); display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; }
+<meta charset="UTF-8">
 
-        .app-container {
-            width: 100%; max-width: 412px; height: 92vh; max-height: 850px;
-            background-color: var(--bg-color); padding: 18px; position: relative;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1); display: flex; flex-direction: column;
-            margin: 4vh 0; border-radius: 16px; overflow: hidden;
-        }
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        .header { text-align: center; margin-bottom: 12px; position: relative; background: white; padding: 12px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
-        .header h1 { font-size: 15px; font-weight: 700; color: var(--primary-color); margin-bottom: 4px; }
-        .header p { font-size: 11px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--accent-color); margin-bottom: 6px; }
-        
-        .status-nuvem { font-size: 10px; font-weight: bold; color: #10B981; display: flex; align-items: center; justify-content: center; gap: 4px; margin-top: 2px; }
-        .status-nuvem.carregando { color: #F59E0B; }
+<title>Residencial Maria de Lourdes - Supabase Realtime</title>
 
-        .admin-lock-btn { position: absolute; top: 10px; right: 12px; font-size: 15px; color: #94A3B8; cursor: pointer; padding: 4px; }
-        body.modo-restrito .admin-lock-btn { color: var(--saida-color); }
+<link rel="manifest" href="manifest.json?v=6">
 
-        .dashboard-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-        .card { background: var(--card-bg); padding: 12px; border-radius: 12px; border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 2px; }
-        .card-full { grid-column: span 2; }
-        .card-title { font-size: 11px; font-weight: 500; color: var(--text-secondary); display: flex; align-items: center; gap: 5px; }
-        .card-value { font-size: 15px; font-weight: 700; }
-        .card.entrada-card { border-left: 4px solid var(--entrada-color); }
-        .card.entrada-card .card-value { color: var(--entrada-color); }
-        .card.saida-card { border-left: 4px solid var(--saida-color); }
-        .card.saida-card .card-value { color: var(--saida-color); }
-        .card.saldo-card { border-left: 4px solid var(--accent-color); background: #EEF2FF; }
-        .card.saldo-card .card-value { color: var(--accent-color); }
+<meta name="theme-color" content="#0A369D">
 
-        .caixa-geral-box { background: var(--card-bg); padding: 10px 14px; border-radius: 12px; border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; font-size: 12px; margin-bottom: 8px; }
-        .caixa-geral-box span { font-weight: 500; color: var(--text-secondary); }
-        .caixa-geral-box strong { font-size: 14px; font-weight: 700; color: var(--primary-color); }
 
-        .action-bar { display: flex; justify-content: space-between; align-items: center; margin: 6px 0 10px 0; padding: 0 4px; }
-        .left-actions { display: flex; gap: 14px; font-size: 18px; color: var(--accent-color); }
-        .left-actions i { cursor: pointer; padding: 4px; }
-        .right-actions { font-size: 20px; color: var(--accent-color); }
-        .right-actions i { cursor: pointer; padding: 4px; }
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 
-        .table-wrapper { display: flex; flex-direction: column; flex: 1; background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border-color); overflow: hidden; margin-bottom: 5px; }
-        .table-header { display: grid; grid-template-columns: 2.2fr 1fr 1fr 0.6fr; padding: 10px; background: #F1F5F9; border-bottom: 1px solid var(--border-color); font-weight: 700; font-size: 12px; text-align: center; color: var(--text-secondary); }
-        .table-header div:first-child { text-align: left; padding-left: 4px; }
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-        .transaction-list { flex: 1; overflow-y: auto; }
-        .transaction-item { display: grid; grid-template-columns: 2.2fr 1fr 1fr 0.6fr; padding: 11px 10px; border-bottom: 1px solid #F1F5F9; font-size: 12px; align-items: center; text-align: center; }
-        .transaction-item:last-child { border-bottom: none; }
-        .transaction-item .desc { text-align: left; padding-left: 4px; font-weight: 500; word-break: break-word; padding-right: 4px; color: var(--primary-color); }
-        body.modo-restrito .transaction-item .desc { color: var(--accent-color); cursor: pointer; text-decoration: underline dotted; }
-        .transaction-item .entrada { color: #0284C7; font-weight: 700; }
-        .transaction-item .saida { color: #DC2626; font-weight: 700; }
-        .transaction-item .foto-btn { color: #CBD5E1; font-size: 15px; }
-        .transaction-item .foto-btn.has-file { color: #10B981; cursor: pointer; }
 
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(2px); justify-content: center; align-items: center; z-index: 100; padding: 16px; }
-        .modal-content { background: white; padding: 22px; border-radius: 14px; width: 100%; max-width: 350px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); max-height: 90vh; overflow-y: auto; }
-        .modal-content h3 { margin-bottom: 14px; font-size: 15px; font-weight: 700; }
-        .form-group { margin-bottom: 12px; display: flex; flex-direction: column; gap: 4px; }
-        .form-group label { font-size: 11px; font-weight: 700; color: var(--text-secondary); }
-        .form-group input, .form-group select { padding: 9px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 13px; width: 100%; color: var(--primary-color); background: #F8FAFC; }
-        .form-buttons { display: flex; gap: 10px; margin-top: 16px; }
-        .btn { flex: 1; padding: 10px; border: none; border-radius: 6px; cursor: pointer; font-weight: 700; font-size: 13px; text-align: center; }
-        .btn-save { background: var(--accent-color); color: white; }
-        .btn-cancel { background: #E2E8F0; color: var(--primary-color); }
-        .btn-delete { background: var(--saida-color); color: white; margin-top: 6px; }
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-        .preview-edit-foto { display: flex; align-items: center; gap: 8px; font-size: 11px; margin-top: 4px; background: #F1F5F9; padding: 6px; border-radius: 6px; }
-        .preview-edit-foto a { color: var(--entrada-color); font-weight: bold; text-decoration: none; }
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
-        /* Viewer de Comprovantes */
-        .viewer-modal-content { background: white; padding: 16px; border-radius: 14px; width: 100%; max-width: 360px; }
-        .viewer-header { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-        .viewer-header h4 { font-size: 13px; font-weight: 700; color: var(--primary-color); }
-        .viewer-close-icon { font-size: 16px; color: var(--text-secondary); cursor: pointer; }
-        .viewer-body { width: 100%; max-height: 340px; overflow: auto; display: flex; flex-direction: column; align-items: center; background-color: #F8FAFC; border-radius: 8px; border: 1px dashed var(--border-color); padding: 6px; }
-        .viewer-body img { max-width: 100%; max-height: 320px; object-fit: contain; border-radius: 6px; }
-        .log-timestamp { font-size: 10px; color: var(--text-secondary); margin-top: 8px; text-align: center; font-style: italic; width: 100%; border-top: 1px solid var(--border-color); padding-top: 6px; }
 
-        .restricted-element { display: none !important; }
-        body.modo-restrito .restricted-element { display: flex !important; }
-        body.modo-restrito i.restricted-element { display: inline-block !important; }
-    </style>
+<style>
+
+:root {
+
+--primary-color: #1E293B;
+
+--accent-color: #0A369D;
+
+--entrada-color: #0284C7;
+
+--saida-color: #EF4444;
+
+--bg-color: #F8FAFC;
+
+--card-bg: #FFFFFF;
+
+--border-color: #E2E8F0;
+
+--text-secondary: #64748B;
+
+}
+
+
+
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Roboto', sans-serif; }
+
+body { background-color: #E2E8F0; color: var(--primary-color); display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; }
+
+
+
+.app-container {
+
+width: 100%; max-width: 412px; height: 92vh; max-height: 850px;
+
+background-color: var(--bg-color); padding: 18px; position: relative;
+
+box-shadow: 0 10px 25px rgba(0,0,0,0.1); display: flex; flex-direction: column;
+
+margin: 4vh 0; border-radius: 16px; overflow: hidden;
+
+}
+
+
+
+.header { text-align: center; margin-bottom: 12px; position: relative; background: white; padding: 12px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+
+.header h1 { font-size: 15px; font-weight: 700; color: var(--primary-color); margin-bottom: 4px; }
+
+.header p { font-size: 11px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--accent-color); margin-bottom: 6px; }
+
+
+.status-nuvem { font-size: 10px; font-weight: bold; color: #10B981; display: flex; align-items: center; justify-content: center; gap: 4px; margin-top: 2px; }
+
+.status-nuvem.carregando { color: #F59E0B; }
+
+
+
+.admin-lock-btn { position: absolute; top: 10px; right: 12px; font-size: 15px; color: #94A3B8; cursor: pointer; padding: 4px; }
+
+body.modo-restrito .admin-lock-btn { color: var(--saida-color); }
+
+
+
+.dashboard-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+
+.card { background: var(--card-bg); padding: 12px; border-radius: 12px; border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 2px; }
+
+.card-full { grid-column: span 2; }
+
+.card-title { font-size: 11px; font-weight: 500; color: var(--text-secondary); display: flex; align-items: center; gap: 5px; }
+
+.card-value { font-size: 15px; font-weight: 700; }
+
+.card.entrada-card { border-left: 4px solid var(--entrada-color); }
+
+.card.entrada-card .card-value { color: var(--entrada-color); }
+
+.card.saida-card { border-left: 4px solid var(--saida-color); }
+
+.card.saida-card .card-value { color: var(--saida-color); }
+
+.card.saldo-card { border-left: 4px solid var(--accent-color); background: #EEF2FF; }
+
+.card.saldo-card .card-value { color: var(--accent-color); }
+
+
+
+.caixa-geral-box { background: var(--card-bg); padding: 10px 14px; border-radius: 12px; border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; font-size: 12px; margin-bottom: 8px; }
+
+.caixa-geral-box span { font-weight: 500; color: var(--text-secondary); }
+
+.caixa-geral-box strong { font-size: 14px; font-weight: 700; color: var(--primary-color); }
+
+
+
+.action-bar { display: flex; justify-content: space-between; align-items: center; margin: 6px 0 10px 0; padding: 0 4px; }
+
+.left-actions { display: flex; gap: 14px; font-size: 18px; color: var(--accent-color); }
+
+.left-actions i { cursor: pointer; padding: 4px; }
+
+.right-actions { font-size: 20px; color: var(--accent-color); }
+
+.right-actions i { cursor: pointer; padding: 4px; }
+
+
+
+.table-wrapper { display: flex; flex-direction: column; flex: 1; background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border-color); overflow: hidden; margin-bottom: 5px; }
+
+.table-header { display: grid; grid-template-columns: 2.2fr 1fr 1fr 0.6fr; padding: 10px; background: #F1F5F9; border-bottom: 1px solid var(--border-color); font-weight: 700; font-size: 12px; text-align: center; color: var(--text-secondary); }
+
+.table-header div:first-child { text-align: left; padding-left: 4px; }
+
+
+
+.transaction-list { flex: 1; overflow-y: auto; }
+
+.transaction-item { display: grid; grid-template-columns: 2.2fr 1fr 1fr 0.6fr; padding: 11px 10px; border-bottom: 1px solid #F1F5F9; font-size: 12px; align-items: center; text-align: center; }
+
+.transaction-item:last-child { border-bottom: none; }
+
+.transaction-item .desc { text-align: left; padding-left: 4px; font-weight: 500; word-break: break-word; padding-right: 4px; color: var(--primary-color); }
+
+body.modo-restrito .transaction-item .desc { color: var(--accent-color); cursor: pointer; text-decoration: underline dotted; }
+
+.transaction-item .entrada { color: #0284C7; font-weight: 700; }
+
+.transaction-item .saida { color: #DC2626; font-weight: 700; }
+
+.transaction-item .foto-btn { color: #CBD5E1; font-size: 15px; }
+
+.transaction-item .foto-btn.has-file { color: #10B981; cursor: pointer; }
+
+
+
+.modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(2px); justify-content: center; align-items: center; z-index: 100; padding: 16px; }
+
+.modal-content { background: white; padding: 22px; border-radius: 14px; width: 100%; max-width: 350px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); max-height: 90vh; overflow-y: auto; }
+
+.modal-content h3 { margin-bottom: 14px; font-size: 15px; font-weight: 700; }
+
+.form-group { margin-bottom: 12px; display: flex; flex-direction: column; gap: 4px; }
+
+.form-group label { font-size: 11px; font-weight: 700; color: var(--text-secondary); }
+
+.form-group input, .form-group select { padding: 9px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 13px; width: 100%; color: var(--primary-color); background: #F8FAFC; }
+
+.form-buttons { display: flex; gap: 10px; margin-top: 16px; }
+
+.btn { flex: 1; padding: 10px; border: none; border-radius: 6px; cursor: pointer; font-weight: 700; font-size: 13px; text-align: center; }
+
+.btn-save { background: var(--accent-color); color: white; }
+
+.btn-cancel { background: #E2E8F0; color: var(--primary-color); }
+
+.btn-delete { background: var(--saida-color); color: white; margin-top: 6px; }
+
+
+
+.preview-edit-foto { display: flex; align-items: center; gap: 8px; font-size: 11px; margin-top: 4px; background: #F1F5F9; padding: 6px; border-radius: 6px; }
+
+.preview-edit-foto a { color: var(--entrada-color); font-weight: bold; text-decoration: none; }
+
+
+
+/* Viewer de Comprovantes */
+
+.viewer-modal-content { background: white; padding: 16px; border-radius: 14px; width: 100%; max-width: 360px; }
+
+.viewer-header { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+
+.viewer-header h4 { font-size: 13px; font-weight: 700; color: var(--primary-color); }
+
+.viewer-close-icon { font-size: 16px; color: var(--text-secondary); cursor: pointer; }
+
+.viewer-body { width: 100%; max-height: 340px; overflow: auto; display: flex; flex-direction: column; align-items: center; background-color: #F8FAFC; border-radius: 8px; border: 1px dashed var(--border-color); padding: 6px; }
+
+.viewer-body img { max-width: 100%; max-height: 320px; object-fit: contain; border-radius: 6px; }
+
+.log-timestamp { font-size: 10px; color: var(--text-secondary); margin-top: 8px; text-align: center; font-style: italic; width: 100%; border-top: 1px solid var(--border-color); padding-top: 6px; }
+
+
+
+.restricted-element { display: none !important; }
+
+body.modo-restrito .restricted-element { display: flex !important; }
+
+body.modo-restrito i.restricted-element { display: inline-block !important; }
+
+</style>
+
 </head>
+
 <body class="modo-publico">
 
-    <div class="app-container" id="mainAppContainer">
-        <div class="header">
-            <div class="admin-lock-btn" onclick="toggleAcesso()" id="lockIcon" title="Painel Administrativo">
-                <i class="fa-solid fa-lock"></i>
-            </div>
-            <h1>🏠 RESIDENCIAL MARIA DE LOURDES</h1>
-            <p id="appPeriodo">CONECTANDO...</p>
-            <div class="status-nuvem" id="cloudStatus">
-                <i class="fa-solid fa-bolt"></i> Sincronizando Realtime...
-            </div>
-        </div>
 
-        <div class="dashboard-cards">
-            <div class="card entrada-card">
-                <div class="card-title"><i class="fa-solid fa-arrow-trend-up"></i> Entradas</div>
-                <div class="card-value" id="txtEntradas">R$ 0,00</div>
-            </div>
-            <div class="card saida-card">
-                <div class="card-title"><i class="fa-solid fa-arrow-trend-down"></i> Saídas</div>
-                <div class="card-value" id="txtSaidas">R$ 0,00</div>
-            </div>
-            <div class="card saldo-card card-full">
-                <div class="card-title"><i class="fa-solid fa-scale-balanced"></i> Resultado Mensal</div>
-                <div class="card-value" id="txtSaldo">R$ 0,00</div>
-            </div>
-        </div>
 
-        <div class="caixa-geral-box">
-            <span>Fundo Inicial do Período:</span>
-            <strong id="txtCaixaMaio">R$ 0,00</strong>
-        </div>
-        <div class="caixa-geral-box" style="background: #F1F5F9; border-color: #CBD5E1;">
-            <span style="color: var(--primary-color); font-weight: 700;">Saldo Atual em Caixa:</span>
-            <strong id="txtBalanco" style="color: #0F172A; font-size: 15px;">R$ 0,00</strong>
-        </div>
+<div class="app-container" id="mainAppContainer">
 
-        <div class="action-bar">
-            <div class="left-actions">
-                <i class="fa-solid fa-circle-dollar-to-slot restricted-element" title="Ajustar Fundo Inicial" onclick="openCaixaModal()"></i>
-                <i class="fa-solid fa-calendar-days" title="Mudar Período" onclick="openModal('filtroModal')"></i>
-                <i class="fa-solid fa-print" onclick="baixarRelatorioPNG()" title="Baixar PNG do Balanço"></i>
-            </div>
-            <div class="right-actions">
-                <i class="fa-solid fa-square-plus restricted-element" onclick="openModal('transactionModal')" title="Novo Lançamento"></i>
-            </div>
-        </div>
+<div class="header">
 
-        <div class="table-wrapper">
-            <div class="table-header">
-                <div>Descrição do Registro</div>
-                <div>Valor</div>
-                <div>Data</div>
-                <div>Anexo</div>
-            </div>
-            <div class="transaction-list" id="transactionList"></div>
-        </div>
-    </div>
+<div class="admin-lock-btn" onclick="toggleAcesso()" id="lockIcon" title="Painel Administrativo">
 
-    <div class="modal" id="filtroModal">
-        <div class="modal-content">
-            <h3>📅 Selecionar Período</h3>
-            <form onsubmit="aplicarFiltroMes(event)">
-                <div class="form-group">
-                    <label>Escolha o Mês/Ano:</label>
-                    <input type="month" id="filtroMesAno" required>
-                </div>
-                <div class="form-buttons">
-                    <button type="button" class="btn btn-cancel" onclick="closeModal('filtroModal')">Voltar</button>
-                    <button type="submit" class="btn btn-save">Filtrar</button>
-                </div>
-            </form>
-        </div>
-    </div>
+<i class="fa-solid fa-lock"></i>
 
-    <div class="modal" id="passwordModal">
-        <div class="modal-content">
-            <h3>🔑 Painel Administrativo</h3>
-            <form onsubmit="verifyPassword(event)">
-                <div class="form-group">
-                    <label>Senha de Acesso:</label>
-                    <input type="password" id="adminPassword" placeholder="••••" required>
-                </div>
-                <div class="form-buttons">
-                    <button type="button" class="btn btn-cancel" onclick="closeModal('passwordModal')">Cancelar</button>
-                    <button type="submit" class="btn btn-save">Liberar</button>
-                </div>
-            </form>
-        </div>
-    </div>
+</div>
 
-    <div class="modal" id="caixaModal">
-        <div class="modal-content">
-            <h3>⚙️ Ajustar Fundo Inicial</h3>
-            <form onsubmit="saveConfig(event)">
-                <div class="form-group">
-                    <label>Valor de Fundo Inicial (R$)</label>
-                    <input type="number" step="0.01" id="cfgCaixaValor" required>
-                </div>
-                <div class="form-buttons">
-                    <button type="button" class="btn btn-cancel" onclick="closeModal('caixaModal')">Cancelar</button>
-                    <button type="submit" class="btn btn-save">Aplicar</button>
-                </div>
-            </form>
-        </div>
-    </div>
+<h1>🏠 RESIDENCIAL MARIA DE LOURDES</h1>
 
-    <div class="modal" id="transactionModal">
-        <div class="modal-content">
-            <h3>Novo Lançamento</h3>
-            <form id="transactionForm" onsubmit="saveTransaction(event)">
-                <div class="form-group">
-                    <label>Categoria</label>
-                    <select id="tipo" required>
-                        <option value="entrada">Entrada (Receita)</option>
-                        <option value="saida">Saída (Despesa)</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Descrição do Item</label>
-                    <input type="text" id="descricao" placeholder="Ex: Recebimento Apto 102" required>
-                </div>
-                <div class="form-group">
-                    <label>Valor Comercial</label>
-                    <input type="number" step="0.01" id="valor" placeholder="0.00" required>
-                </div>
-                <div class="form-group">
-                    <label>Data Operação</label>
-                    <input type="date" id="data" required>
-                </div>
-                <div class="form-group">
-                    <label>Foto do Comprovante</label>
-                    <input type="file" id="comprovante" accept="image/*">
-                </div>
-                <div class="form-buttons">
-                    <button type="button" class="btn btn-cancel" onclick="closeModal('transactionModal')">Cancelar</button>
-                    <button type="submit" class="btn btn-save">Salvar no Supabase</button>
-                </div>
-            </form>
-        </div>
-    </div>
+<p id="appPeriodo">CONECTANDO...</p>
 
-    <div class="modal" id="editModal">
-        <div class="modal-content">
-            <h3>📝 Alterar Lançamento</h3>
-            <form id="editForm" onsubmit="updateTransaction(event)">
-                <input type="hidden" id="editId">
-                <input type="hidden" id="editFotoUrlOriginal">
-                <div class="form-group">
-                    <label>Categoria</label>
-                    <select id="editTipo" required>
-                        <option value="entrada">Entrada (Receita)</option>
-                        <option value="saida">Saída (Despesa)</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Descrição</label>
-                    <input type="text" id="editDescricao" required>
-                </div>
-                <div class="form-group">
-                    <label>Valor (R$)</label>
-                    <input type="number" step="0.01" id="editValor" required>
-                </div>
-                <div class="form-group">
-                    <label>Data</label>
-                    <input type="date" id="editData" required>
-                </div>
-                <div class="form-group">
-                    <label>Substituir/Adicionar Comprovante</label>
-                    <input type="file" id="editComprovante" accept="image/*">
-                    <div id="editPreviewContainer"></div>
-                </div>
-                <div class="form-buttons">
-                    <button type="button" class="btn btn-cancel" onclick="closeModal('editModal')">Voltar</button>
-                    <button type="submit" class="btn btn-save">Atualizar Nuvem</button>
-                </div>
-                <button type="button" class="btn btn-delete" onclick="triggerDeleteFromEdit()">
-                    <i class="fa-solid fa-trash-can"></i> Apagar Registro
-                </button>
-            </form>
-        </div>
-    </div>
+<div class="status-nuvem" id="cloudStatus">
 
-    <div class="modal" id="viewerModal">
-        <div class="viewer-modal-content">
-            <div class="viewer-header">
-                <h4 id="viewerTitle">Comprovante</h4>
-                <i class="fa-solid fa-xmark viewer-close-icon" onclick="closeModal('viewerModal')"></i>
-            </div>
-            <div class="viewer-body" id="viewerBody"></div>
-            <div class="log-timestamp" id="viewerLog">Registrado em: --</div>
-        </div>
-    </div>
+<i class="fa-solid fa-bolt"></i> Sincronizando Realtime...
 
-    <script>
-        const SUPABASE_URL = "https://pqltnhmdsbhmuhdokqav.supabase.co";
-        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxbHRuaG1kc2JobXVoZG9rcWF2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1MjQwODMsImV4cCI6MjA5NzEwMDA4M30.AQiZXPHB7JDW6_oFmtLNMaAHSTvTFVRCaDiZWvh-1-M";
+</div>
 
-        // Inicializa o cliente oficial do Supabase
-        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+</div>
 
-        function obterMesAnoAtual() {
-            const agora = new Date();
-            return `${agora.getFullYear()}-${String(agora.getMonth() + 1).padStart(2, '0')}`;
-        }
 
-        let mesSelecionadoAtual = localStorage.getItem('mesSelecionadoAtual') || obterMesAnoAtual(); 
-        const SENHA_CORRETA = "1234";
-        let lancamentos = [];
-        let listaFundosIniciais = []; // Lista carregada do banco do Supabase
 
-        function setStatusCarregando(bool) {
-            const statusBox = document.getElementById('cloudStatus');
-            if(bool) {
-                statusBox.className = "status-nuvem carregando";
-                statusBox.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Sincronizando dados...`;
-            } else {
-                statusBox.className = "status-nuvem";
-                statusBox.innerHTML = `<i class="fa-solid fa-bolt"></i> Conectado em Tempo Real`;
-            }
-        }
+<div class="dashboard-cards">
 
-        // Busca inicial de Lançamentos e de Configurações de Caixa da Nuvem
-        async function carregarDadosDaNuvem() {
-            setStatusCarregando(true);
-            
-            // Buscar lançamentos
-            const { data: dataLanc, error: errorLanc } = await _supabase.from('lancamentos').select('*');
-            if (!errorLanc && dataLanc) lancamentos = dataLanc;
+<div class="card entrada-card">
 
-            // Buscar fundos iniciais centralizados
-            const { data: dataCaixa, error: errorCaixa } = await _supabase.from('configuracoes_caixa').select('*');
-            if (!errorCaixa && dataCaixa) listaFundosIniciais = dataCaixa;
-            
-            render();
-            setStatusCarregando(false);
-        }
+<div class="card-title"><i class="fa-solid fa-arrow-trend-up"></i> Entradas</div>
 
-        // Configuração da Escuta em Tempo Real (Realtime) para ambas as tabelas
-        function escutarMudancasEmTempoReal() {
-            // Canal para lançamentos
-            _supabase
-                .channel('canal-lancamentos')
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'lancamentos' }, (payload) => {
-                    if (payload.eventType === 'INSERT') lancamentos.push(payload.new);
-                    else if (payload.eventType === 'UPDATE') {
-                        const idx = lancamentos.findIndex(l => l.id === payload.new.id);
-                        if (idx !== -1) lancamentos[idx] = payload.new;
-                    } else if (payload.eventType === 'DELETE') {
-                        lancamentos = lancamentos.filter(l => l.id !== payload.old.id);
-                    }
-                    render();
-                }).subscribe();
+<div class="card-value" id="txtEntradas">R$ 0,00</div>
 
-            // Canal para fundo inicial (configuracoes_caixa)
-            _supabase
-                .channel('canal-caixa')
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'configuracoes_caixa' }, (payload) => {
-                    if (payload.eventType === 'INSERT') listaFundosIniciais.push(payload.new);
-                    else if (payload.eventType === 'UPDATE') {
-                        const idx = listaFundosIniciais.findIndex(c => c.id === payload.new.id);
-                        if (idx !== -1) listaFundosIniciais[idx] = payload.new;
-                    }
-                    render(); // Atualiza a tela de todos em tempo real na hora!
-                }).subscribe();
-        }
+</div>
 
-        async function fazerUploadFoto(file) {
-            if(!file) return null;
-            const fileExt = file.name.split('.').pop();
-            const fileName = `${Date.now()}.${fileExt}`;
+<div class="card saida-card">
 
-            const { data, error } = await _supabase.storage
-                .from('comprovantes')
-                .upload(fileName, file);
-            
-            if(error) { alert("Falha no envio da imagem."); return null; }
-            
-            const { data: publicData } = _supabase.storage
-                .from('comprovantes')
-                .getPublicUrl(fileName);
+<div class="card-title"><i class="fa-solid fa-arrow-trend-down"></i> Saídas</div>
 
-            return publicData.publicUrl;
-        }
+<div class="card-value" id="txtSaidas">R$ 0,00</div>
 
-        function openModal(id) { 
-            document.getElementById(id).style.display = 'flex'; 
-            if(id === 'passwordModal') setTimeout(() => document.getElementById('adminPassword').focus(), 100);
-            if(id === 'filtroModal') document.getElementById('filtroMesAno').value = mesSelecionadoAtual;
-        }
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+</div>
 
-        function openCaixaModal() {
-            document.getElementById('cfgCaixaValor').value = obterCaixaBaseDoMes(mesSelecionadoAtual);
-            openModal('caixaModal');
-        }
+<div class="card saldo-card card-full">
 
-        // Salva o Fundo Inicial DIRETAMENTE no banco do Supabase
-        async function saveConfig(e) {
-            e.preventDefault();
-            setStatusCarregando(true);
-            let valorNovo = parseFloat(document.getElementById('cfgCaixaValor').value) || 0;
-            
-            // Verifica se já existe um registro para este mês na lista local
-            const registroExistente = listaFundosIniciais.find(c => c.mes_ano === mesSelecionadoAtual);
+<div class="card-title"><i class="fa-solid fa-scale-balanced"></i> Resultado Mensal</div>
 
-            if (registroExistente) {
-                // Atualiza registro existente
-                await _supabase
-                    .from('configuracoes_caixa')
-                    .update({ valor_fundo_inicial: valorNovo })
-                    .eq('id', registroExistente.id);
-            } else {
-                // Cria um novo registro para o mês
-                await _supabase
-                    .from('configuracoes_caixa')
-                    .insert([{ mes_ano: mesSelecionadoAtual, valor_fundo_inicial: valorNovo }]);
-            }
+<div class="card-value" id="txtSaldo">R$ 0,00</div>
 
-            closeModal('caixaModal');
-            // Recarrega os dados de caixa para garantir alinhamento perfeito
-            const { data } = await _supabase.from('configuracoes_caixa').select('*');
-            if (data) listaFundosIniciais = data;
-            
-            render();
-            setStatusCarregando(false);
-        }
+</div>
 
-        // Lê o valor do fundo vindo do banco do Supabase (senão achar, adota 0.00 como base padrão)
-        function obterCaixaBaseDoMes(anoMes) {
-            const registro = listaFundosIniciais.find(c => c.mes_ano === anoMes);
-            return registro ? parseFloat(registro.valor_fundo_inicial) : 0.00;
-        }
+</div>
 
-        function toggleAcesso() {
-            if (document.body.classList.contains('modo-restrito')) {
-                document.body.className = 'modo-publico';
-                document.getElementById('lockIcon').innerHTML = '<i class="fa-solid fa-lock"></i>';
-            } else { openModal('passwordModal'); }
-        }
 
-        function verifyPassword(e) {
-            e.preventDefault();
-            if (document.getElementById('adminPassword').value === SENHA_CORRETA) {
-                document.body.className = 'modo-restrito';
-                document.getElementById('lockIcon').innerHTML = '<i class="fa-solid fa-lock-open"></i>';
-                document.getElementById('adminPassword').value = '';
-                closeModal('passwordModal');
-            } else { alert("Senha incorreta!"); }
-        }
 
-        function aplicarFiltroMes(e) {
-            e.preventDefault();
-            const inputFiltro = document.getElementById('filtroMesAno').value;
-            if (inputFiltro) {
-                mesSelecionadoAtual = inputFiltro.trim();
-                localStorage.setItem('mesSelecionadoAtual', mesSelecionadoAtual);
-            }
-            closeModal('filtroModal');
-            render();
-        }
+<div class="caixa-geral-box">
 
-        async function saveTransaction(e) {
-            e.preventDefault();
-            setStatusCarregando(true);
-            
-            const fileInput = document.getElementById('comprovante');
-            const file = fileInput.files ? fileInput.files[0] : null;
-            
-            let urlFotoSalva = null;
-            if(file) { urlFotoSalva = await fazerUploadFoto(file); }
+<span>Fundo Inicial do Período:</span>
 
-            const novoItem = {
-                tipo: document.getElementById('tipo').value,
-                descricao: document.getElementById('descricao').value,
-                valor: parseFloat(document.getElementById('valor').value) || 0,
-                data: document.getElementById('data').value,
-                criadoEm: new Date().toLocaleString('pt-BR'),
-                fotoUrl: urlFotoSalva
-            };
+<strong id="txtCaixaMaio">R$ 0,00</strong>
 
-            const { error } = await _supabase
-                .from('lancamentos')
-                .insert([novoItem]);
+</div>
 
-            if(!error) {
-                document.getElementById('transactionForm').reset();
-                closeModal('transactionModal');
-                if(novoItem.data) {
-                    mesSelecionadoAtual = novoItem.data.substring(0, 7);
-                    localStorage.setItem('mesSelecionadoAtual', mesSelecionadoAtual);
-                }
-            } else {
-                alert("Erro ao salvar: " + error.message);
-            }
-            setStatusCarregando(false);
-        }
+<div class="caixa-geral-box" style="background: #F1F5F9; border-color: #CBD5E1;">
 
-        function cliqueDescricao(indexInFiltered) {
-            if (!document.body.classList.contains('modo-restrito')) return;
-            
-            const filtrados = lancamentos.filter(item => item.data && item.data.substring(0, 7) === mesSelecionadoAtual);
-            filtrados.sort((a, b) => new Date(a.data) - new Date(b.data));
-            const itemOriginal = filtrados[indexInFiltered];
-            if (!itemOriginal) return;
+<span style="color: var(--primary-color); font-weight: 700;">Saldo Atual em Caixa:</span>
 
-            document.getElementById('editId').value = itemOriginal.id;
-            document.getElementById('editTipo').value = itemOriginal.tipo;
-            document.getElementById('editDescricao').value = itemOriginal.descricao;
-            document.getElementById('editValor').value = itemOriginal.valor;
-            document.getElementById('editData').value = itemOriginal.data || "";
-            document.getElementById('editFotoUrlOriginal').value = itemOriginal.fotoUrl || "";
-            document.getElementById('editComprovante').value = ""; 
+<strong id="txtBalanco" style="color: #0F172A; font-size: 15px;">R$ 0,00</strong>
 
-            const previewContainer = document.getElementById('editPreviewContainer');
-            if(itemOriginal.fotoUrl) {
-                previewContainer.innerHTML = `
-                    <div class="preview-edit-foto">
-                        <i class="fa-solid fa-image"></i> 
-                        <span>Possui comprovante anexado.</span>
-                        <a href="${itemOriginal.fotoUrl}" target="_blank">Visualizar atual</a>
-                    </div>`;
-            } else {
-                previewContainer.innerHTML = "";
-            }
+</div>
 
-            openModal('editModal');
-        }
 
-        async function updateTransaction(e) {
-            e.preventDefault();
-            setStatusCarregando(true);
-            
-            const id = document.getElementById('editId').value;
-            const fileInput = document.getElementById('editComprovante');
-            const file = fileInput.files ? fileInput.files[0] : null;
-            
-            let urlFotoSalva = document.getElementById('editFotoUrlOriginal').value;
-            
-            if(file) { 
-                const novaUrl = await fazerUploadFoto(file); 
-                if(novaUrl) urlFotoSalva = novaUrl;
-            }
 
-            const itemEditado = {
-                tipo: document.getElementById('editTipo').value,
-                descricao: document.getElementById('editDescricao').value,
-                valor: parseFloat(document.getElementById('editValor').value) || 0,
-                data: document.getElementById('editData').value,
-                criadoEm: new Date().toLocaleString('pt-BR') + " (Modificado)",
-                fotoUrl: urlFotoSalva
-            };
+<div class="action-bar">
 
-            const { error } = await _supabase
-                .from('lancamentos')
-                .update(itemEditado)
-                .eq('id', id);
+<div class="left-actions">
 
-            if(!error) {
-                closeModal('editModal');
-            } else {
-                alert("Erro ao atualizar: " + error.message);
-            }
-            setStatusCarregando(false);
-        }
+<i class="fa-solid fa-circle-dollar-to-slot restricted-element" title="Ajustar Fundo Inicial" onclick="openCaixaModal()"></i>
 
-        async function triggerDeleteFromEdit() {
-            if(confirm("Deseja deletar este registro do Supabase?")) {
-                setStatusCarregando(true);
-                const id = document.getElementById('editId').value;
+<i class="fa-solid fa-calendar-days" title="Mudar Período" onclick="openModal('filtroModal')"></i>
 
-                const { error } = await _supabase
-                    .from('lancamentos')
-                    .delete()
-                    .eq('id', id);
+<i class="fa-solid fa-print" onclick="baixarRelatorioPNG()" title="Baixar PNG do Balanço"></i>
 
-                if(!error) {
-                    closeModal('editModal');
-                } else {
-                    alert("Erro ao deletar: " + error.message);
-                }
-                setStatusCarregando(false);
-            }
-        }
+</div>
 
-        function exibirComprovante(idItem) {
-            const item = lancamentos.find(l => l.id == idItem);
-            if (!item || !item.fotoUrl) return;
-            
-            const viewerBody = document.getElementById('viewerBody');
-            document.getElementById('viewerTitle').innerText = item.descricao;
-            document.getElementById('viewerLog').innerText = `Histórico: ${item.criadoEm || 'Sem registro'}`;
-            
-            viewerBody.innerHTML = `<img src="${item.fotoUrl}" alt="Comprovante">`;
-            openModal('viewerModal');
-        }
+<div class="right-actions">
 
-        function baixarRelatorioPNG() {
-            const containerApp = document.getElementById('mainAppContainer');
-            const btnImpressora = document.querySelector('.fa-print');
-            btnImpressora.style.color = '#EF4444'; 
+<i class="fa-solid fa-square-plus restricted-element" onclick="openModal('transactionModal')" title="Novo Lançamento"></i>
 
-            html2canvas(containerApp, {
-                useCORS: true, allowTaint: true, scale: 2, backgroundColor: "#F8FAFC"
-            }).then(canvas => {
-                const urlImagem = canvas.toDataURL("image/png");
-                const linkDownload = document.createElement('a');
-                const nomeMesFormatado = document.getElementById('appPeriodo').innerText.replace(/\s+/g, '_');
-                
-                linkDownload.download = `Balanco_Supabase_${nomeMesFormatado}.png`;
-                linkDownload.href = urlImagem;
-                document.body.appendChild(linkDownload);
-                linkDownload.click();
-                document.body.removeChild(linkDownload);
-                
-                btnImpressora.style.color = 'var(--accent-color)';
-            }).catch(() => { btnImpressora.style.color = 'var(--accent-color)'; });
-        }
+</div>
 
-        function formatMoeda(valor) { return (valor || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); }
-        function formatData(dataStr) { if(!dataStr) return "-"; const partes = dataStr.split('-'); return `${partes[2]}/${partes[1]}`; }
+</div>
+
+
+
+<div class="table-wrapper">
+
+<div class="table-header">
+
+<div>Descrição do Registro</div>
+
+<div>Valor</div>
+
+<div>Data</div>
+
+<div>Anexo</div>
+
+</div>
+
+<div class="transaction-list" id="transactionList"></div>
+
+</div>
+
+</div>
+
+
+
+<div class="modal" id="filtroModal">
+
+<div class="modal-content">
+
+<h3>📅 Selecionar Período</h3>
+
+<form onsubmit="aplicarFiltroMes(event)">
+
+<div class="form-group">
+
+<label>Escolha o Mês/Ano:</label>
+
+<input type="month" id="filtroMesAno" required>
+
+</div>
+
+<div class="form-buttons">
+
+<button type="button" class="btn btn-cancel" onclick="closeModal('filtroModal')">Voltar</button>
+
+<button type="submit" class="btn btn-save">Filtrar</button>
+
+</div>
+
+</form>
+
+</div>
+
+</div>
+
+
+
+<div class="modal" id="passwordModal">
+
+<div class="modal-content">
+
+<h3>🔑 Painel Administrativo</h3>
+
+<form onsubmit="verifyPassword(event)">
+
+<div class="form-group">
+
+<label>Senha de Acesso:</label>
+
+<input type="password" id="adminPassword" placeholder="••••" required>
+
+</div>
+
+<div class="form-buttons">
+
+<button type="button" class="btn btn-cancel" onclick="closeModal('passwordModal')">Cancelar</button>
+
+<button type="submit" class="btn btn-save">Liberar</button>
+
+</div>
+
+</form>
+
+</div>
+
+</div>
+
+
+
+<div class="modal" id="caixaModal">
+
+<div class="modal-content">
+
+<h3>⚙️ Ajustar Fundo Inicial</h3>
+
+<form onsubmit="saveConfig(event)">
+
+<div class="form-group">
+
+<label>Valor de Fundo Inicial (R$)</label>
+
+<input type="number" step="0.01" id="cfgCaixaValor" required>
+
+</div>
+
+<div class="form-buttons">
+
+<button type="button" class="btn btn-cancel" onclick="closeModal('caixaModal')">Cancelar</button>
+
+<button type="submit" class="btn btn-save">Aplicar</button>
+
+</div>
+
+</form>
+
+</div>
+
+</div>
+
+
+
+<div class="modal" id="transactionModal">
+
+<div class="modal-content">
+
+<h3>Novo Lançamento</h3>
+
+<form id="transactionForm" onsubmit="saveTransaction(event)">
+
+<div class="form-group">
+
+<label>Categoria</label>
+
+<select id="tipo" required>
+
+<option value="entrada">Entrada (Receita)</option>
+
+<option value="saida">Saída (Despesa)</option>
+
+</select>
+
+</div>
+
+<div class="form-group">
+
+<label>Descrição do Item</label>
+
+<input type="text" id="descricao" placeholder="Ex: Recebimento Apto 102" required>
+
+</div>
+
+<div class="form-group">
+
+<label>Valor Comercial</label>
+
+<input type="number" step="0.01" id="valor" placeholder="0.00" required>
+
+</div>
+
+<div class="form-group">
+
+<label>Data Operação</label>
+
+<input type="date" id="data" required>
+
+</div>
+
+<div class="form-group">
+
+<label>Foto do Comprovante</label>
+
+<input type="file" id="comprovante" accept="image/*">
+
+</div>
+
+<div class="form-buttons">
+
+<button type="button" class="btn btn-cancel" onclick="closeModal('transactionModal')">Cancelar</button>
+
+<button type="submit" class="btn btn-save">Salvar no Supabase</button>
+
+</div>
+
+</form>
+
+</div>
+
+</div>
+
+
+
+<div class="modal" id="editModal">
+
+<div class="modal-content">
+
+<h3>📝 Alterar Lançamento</h3>
+
+<form id="editForm" onsubmit="updateTransaction(event)">
+
+<input type="hidden" id="editId">
+
+<input type="hidden" id="editFotoUrlOriginal">
+
+<div class="form-group">
+
+<label>Categoria</label>
+
+<select id="editTipo" required>
+
+<option value="entrada">Entrada (Receita)</option>
+
+<option value="saida">Saída (Despesa)</option>
+
+</select>
+
+</div>
+
+<div class="form-group">
+
+<label>Descrição</label>
+
+<input type="text" id="editDescricao" required>
+
+</div>
+
+<div class="form-group">
+
+<label>Valor (R$)</label>
+
+<input type="number" step="0.01" id="editValor" required>
+
+</div>
+
+<div class="form-group">
+
+<label>Data</label>
+
+<input type="date" id="editData" required>
+
+</div>
+
+<div class="form-group">
+
+<label>Substituir/Adicionar Comprovante</label>
+
+<input type="file" id="editComprovante" accept="image/*">
+
+<div id="editPreviewContainer"></div>
+
+</div>
+
+<div class="form-buttons">
+
+<button type="button" class="btn btn-cancel" onclick="closeModal('editModal')">Voltar</button>
+
+<button type="submit" class="btn btn-save">Atualizar Nuvem</button>
+
+</div>
+
+<button type="button" class="btn btn-delete" onclick="triggerDeleteFromEdit()">
+
+<i class="fa-solid fa-trash-can"></i> Apagar Registro
+
+</button>
+
+</form>
+
+</div>
+
+</div>
+
+
+
+<div class="modal" id="viewerModal">
+
+<div class="viewer-modal-content">
+
+<div class="viewer-header">
+
+<h4 id="viewerTitle">Comprovante</h4>
+
+<i class="fa-solid fa-xmark viewer-close-icon" onclick="closeModal('viewerModal')"></i>
+
+</div>
+
+<div class="viewer-body" id="viewerBody"></div>
+
+<div class="log-timestamp" id="viewerLog">Registrado em: --</div>
+
+</div>
+
+</div>
+
+
+
+<script>
+
+const SUPABASE_URL = "https://pqltnhmdsbhmuhdokqav.supabase.co";
+
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxbHRuaG1kc2JobXVoZG9rcWF2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1MjQwODMsImV4cCI6MjA5NzEwMDA4M30.AQiZXPHB7JDW6_oFmtLNMaAHSTvTFVRCaDiZWvh-1-M";
+
+
+
+// Inicializa o cliente oficial do Supabase
+
+const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+
+
+function obterMesAnoAtual() {
+
+const agora = new Date();
+
+return `${agora.getFullYear()}-${String(agora.getMonth() + 1).padStart(2, '0')}`;
+
+}
+
+
+
+let mesSelecionadoAtual = localStorage.getItem('mesSelecionadoAtual') || obterMesAnoAtual();
+
+const SENHA_CORRETA = "1234";
+
+let lancamentos = [];
+
+let listaFundosIniciais = []; // Lista carregada do banco do Supabase
+
+
+
+function setStatusCarregando(bool) {
+
+const statusBox = document.getElementById('cloudStatus');
+
+if(bool) {
+
+statusBox.className = "status-nuvem carregando";
+
+statusBox.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Sincronizando dados...`;
+
+} else {
+
+statusBox.className = "status-nuvem";
+
+statusBox.innerHTML = `<i class="fa-solid fa-bolt"></i> Conectado em Tempo Real`;
+
+}
+
+}
+
+
+
+// Busca inicial de Lançamentos e de Configurações de Caixa da Nuvem
+
+async function carregarDadosDaNuvem() {
+
+setStatusCarregando(true);
+
+
+// Buscar lançamentos
+
+const { data: dataLanc, error: errorLanc } = await _supabase.from('lancamentos').select('*');
+
+if (!errorLanc && dataLanc) lancamentos = dataLanc;
+
+
+
+// Buscar fundos iniciais centralizados
+
+const { data: dataCaixa, error: errorCaixa } = await _supabase.from('configuracoes_caixa').select('*');
+
+if (!errorCaixa && dataCaixa) listaFundosIniciais = dataCaixa;
+
+
+render();
+
+setStatusCarregando(false);
+
+}
+
+
+
+// Configuração da Escuta em Tempo Real (Realtime) para ambas as tabelas
+
+function escutarMudancasEmTempoReal() {
+
+// Canal para lançamentos
+
+_supabase
+
+.channel('canal-lancamentos')
+
+.on('postgres_changes', { event: '*', schema: 'public', table: 'lancamentos' }, (payload) => {
+
+if (payload.eventType === 'INSERT') lancamentos.push(payload.new);
+
+else if (payload.eventType === 'UPDATE') {
+
+const idx = lancamentos.findIndex(l => l.id === payload.new.id);
+
+if (idx !== -1) lancamentos[idx] = payload.new;
+
+} else if (payload.eventType === 'DELETE') {
+
+lancamentos = lancamentos.filter(l => l.id !== payload.old.id);
+
+}
+
+render();
+
+}).subscribe();
+
+
+
+// Canal para fundo inicial (configuracoes_caixa)
+
+_supabase
+
+.channel('canal-caixa')
+
+.on('postgres_changes', { event: '*', schema: 'public', table: 'configuracoes_caixa' }, (payload) => {
+
+if (payload.eventType === 'INSERT') listaFundosIniciais.push(payload.new);
+
+else if (payload.eventType === 'UPDATE') {
+
+const idx = listaFundosIniciais.findIndex(c => c.id === payload.new.id);
+
+if (idx !== -1) listaFundosIniciais[idx] = payload.new;
+
+}
+
+render(); // Atualiza a tela de todos em tempo real na hora!
+
+}).subscribe();
+
+}
+
+
+
+async function fazerUploadFoto(file) {
+
+if(!file) return null;
+
+const fileExt = file.name.split('.').pop();
+
+const fileName = `${Date.now()}.${fileExt}`;
+
+
+
+const { data, error } = await _supabase.storage
+
+.from('comprovantes')
+
+.upload(fileName, file);
+
+
+if(error) { alert("Falha no envio da imagem."); return null; }
+
+
+const { data: publicData } = _supabase.storage
+
+.from('comprovantes')
+
+.getPublicUrl(fileName);
+
+
+
+return publicData.publicUrl;
+
+}
+
+
+
+function openModal(id) {
+
+document.getElementById(id).style.display = 'flex';
+
+if(id === 'passwordModal') setTimeout(() => document.getElementById('adminPassword').focus(), 100);
+
+if(id === 'filtroModal') document.getElementById('filtroMesAno').value = mesSelecionadoAtual;
+
+}
+
+function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+
+
+function openCaixaModal() {
+
+document.getElementById('cfgCaixaValor').value = obterCaixaBaseDoMes(mesSelecionadoAtual);
+
+openModal('caixaModal');
+
+}
+
+
+
+// Salva o Fundo Inicial DIRETAMENTE no banco do Supabase
+
+async function saveConfig(e) {
+
+e.preventDefault();
+
+setStatusCarregando(true);
+
+let valorNovo = parseFloat(document.getElementById('cfgCaixaValor').value) || 0;
+
+
+// Verifica se já existe um registro para este mês na lista local
+
+const registroExistente = listaFundosIniciais.find(c => c.mes_ano === mesSelecionadoAtual);
+
+
+
+if (registroExistente) {
+
+// Atualiza registro existente
+
+await _supabase
+
+.from('configuracoes_caixa')
+
+.update({ valor_fundo_inicial: valorNovo })
+
+.eq('id', registroExistente.id);
+
+} else {
+
+// Cria um novo registro para o mês
+
+await _supabase
+
+.from('configuracoes_caixa')
+
+.insert([{ mes_ano: mesSelecionadoAtual, valor_fundo_inicial: valorNovo }]);
+
+}
+
+
+
+closeModal('caixaModal');
+
+// Recarrega os dados de caixa para garantir alinhamento perfeito
+
+const { data } = await _supabase.from('configuracoes_caixa').select('*');
+
+if (data) listaFundosIniciais = data;
+
+
+render();
+
+setStatusCarregando(false);
+
+}
+
+
+
+// Lê o valor do fundo vindo do banco do Supabase (senão achar, adota 0.00 como base padrão)
+
+function obterCaixaBaseDoMes(anoMes) {
+
+const registro = listaFundosIniciais.find(c => c.mes_ano === anoMes);
+
+return registro ? parseFloat(registro.valor_fundo_inicial) : 0.00;
+
+}
+
+
+
+function toggleAcesso() {
+
+if (document.body.classList.contains('modo-restrito')) {
+
+document.body.className = 'modo-publico';
+
+document.getElementById('lockIcon').innerHTML = '<i class="fa-solid fa-lock"></i>';
+
+} else { openModal('passwordModal'); }
+
+}
+
+
+
+function verifyPassword(e) {
+
+e.preventDefault();
+
+if (document.getElementById('adminPassword').value === SENHA_CORRETA) {
+
+document.body.className = 'modo-restrito';
+
+document.getElementById('lockIcon').innerHTML = '<i class="fa-solid fa-lock-open"></i>';
+
+document.getElementById('adminPassword').value = '';
+
+closeModal('passwordModal');
+
+} else { alert("Senha incorreta!"); }
+
+}
+
+
+
+function aplicarFiltroMes(e) {
+
+e.preventDefault();
+
+const inputFiltro = document.getElementById('filtroMesAno').value;
+
+if (inputFiltro) {
+
+mesSelecionadoAtual = inputFiltro.trim();
+
+localStorage.setItem('mesSelecionadoAtual', mesSelecionadoAtual);
+
+}
+
+closeModal('filtroModal');
+
+render();
+
+}
+
+
+
+async function saveTransaction(e) {
+
+e.preventDefault();
+
+setStatusCarregando(true);
+
+
+const fileInput = document.getElementById('comprovante');
+
+const file = fileInput.files ? fileInput.files[0] : null;
+
+
+let urlFotoSalva = null;
+
+if(file) { urlFotoSalva = await fazerUploadFoto(file); }
+
+
+
+const novoItem = {
+
+tipo: document.getElementById('tipo').value,
+
+descricao: document.getElementById('descricao').value,
+
+valor: parseFloat(document.getElementById('valor').value) || 0,
+
+data: document.getElementById('data').value,
+
+criadoEm: new Date().toLocaleString('pt-BR'),
+
+fotoUrl: urlFotoSalva
+
+};
+
+
+
+const { error } = await _supabase
+
+.from('lancamentos')
+
+.insert([novoItem]);
+
+
+
+if(!error) {
+
+document.getElementById('transactionForm').reset();
+
+closeModal('transactionModal');
+
+if(novoItem.data) {
+
+mesSelecionadoAtual = novoItem.data.substring(0, 7);
+
+localStorage.setItem('mesSelecionadoAtual', mesSelecionadoAtual);
+
+}
+
+} else {
+
+alert("Erro ao salvar: " + error.message);
+
+}
+
+setStatusCarregando(false);
+
+}
+
+
+
+function cliqueDescricao(indexInFiltered) {
+
+if (!document.body.classList.contains('modo-restrito')) return;
+
+
+const filtrados = lancamentos.filter(item => item.data && item.data.substring(0, 7) === mesSelecionadoAtual);
+
+filtrados.sort((a, b) => new Date(a.data) - new Date(b.data));
+
+const itemOriginal = filtrados[indexInFiltered];
+
+if (!itemOriginal) return;
+
+
+
+document.getElementById('editId').value = itemOriginal.id;
+
+document.getElementById('editTipo').value = itemOriginal.tipo;
+
+document.getElementById('editDescricao').value = itemOriginal.descricao;
+
+document.getElementById('editValor').value = itemOriginal.valor;
+
+document.getElementById('editData').value = itemOriginal.data || "";
+
+document.getElementById('editFotoUrlOriginal').value = itemOriginal.fotoUrl || "";
+
+document.getElementById('editComprovante').value = "";
+
+
+
+const previewContainer = document.getElementById('editPreviewContainer');
+
+if(itemOriginal.fotoUrl) {
+
+previewContainer.innerHTML = `
+
+<div class="preview-edit-foto">
+
+<i class="fa-solid fa-image"></i>
+
+<span>Possui comprovante anexado.</span>
+
+<a href="${itemOriginal.fotoUrl}" target="_blank">Visualizar atual</a>
+
+</div>`;
+
+} else {
+
+previewContainer.innerHTML = "";
+
+}
+
+
+
+openModal('editModal');
+
+}
+
+
+
+async function updateTransaction(e) {
+
+e.preventDefault();
+
+setStatusCarregando(true);
+
+
+const id = document.getElementById('editId').value;
+
+const fileInput = document.getElementById('editComprovante');
+
+const file = fileInput.files ? fileInput.files[0] : null;
+
+
+let urlFotoSalva = document.getElementById('editFotoUrlOriginal').value;
+
+
+if(file) {
+
+const novaUrl = await fazerUploadFoto(file);
+
+if(novaUrl) urlFotoSalva = novaUrl;
+
+}
+
+
+
+const itemEditado = {
+
+tipo: document.getElementById('editTipo').value,
+
+descricao: document.getElementById('editDescricao').value,
+
+valor: parseFloat(document.getElementById('editValor').value) || 0,
+
+data: document.getElementById('editData').value,
+
+criadoEm: new Date().toLocaleString('pt-BR') + " (Modificado)",
+
+fotoUrl: urlFotoSalva
+
+};
+
+
+
+const { error } = await _supabase
+
+.from('lancamentos')
+
+.update(itemEditado)
+
+.eq('id', id);
+
+
+
+if(!error) {
+
+closeModal('editModal');
+
+} else {
+
+alert("Erro ao atualizar: " + error.message);
+
+}
+
+setStatusCarregando(false);
+
+}
+
+
+
+async function triggerDeleteFromEdit() {
+
+if(confirm("Deseja deletar este registro do Supabase?")) {
+
+setStatusCarregando(true);
+
+const id = document.getElementById('editId').value;
+
+
+
+const { error } = await _supabase
+
+.from('lancamentos')
+
+.delete()
+
+.eq('id', id);
+
+
+
+if(!error) {
+
+closeModal('editModal');
+
+} else {
+
+alert("Erro ao deletar: " + error.message);
+
+}
+
+setStatusCarregando(false);
+
+}
+
+}
+
+
+
+function exibirComprovante(idItem) {
+
+const item = lancamentos.find(l => l.id == idItem);
+
+if (!item || !item.fotoUrl) return;
+
+
+const viewerBody = document.getElementById('viewerBody');
+
+document.getElementById('viewerTitle').innerText = item.descricao;
+
+document.getElementById('viewerLog').innerText = `Histórico: ${item.criadoEm || 'Sem registro'}`;
+
+
+viewerBody.innerHTML = `<img src="${item.fotoUrl}" alt="Comprovante">`;
+
+openModal('viewerModal');
+
+}
+
+
+
+async function baixarRelatorioPNG() {
+    const containerApp = document.getElementById('mainAppContainer');
+    const wrapper = document.querySelector('.table-wrapper');
+    const lista = document.getElementById('transactionList');
+    const btnImpressora = document.querySelector('.fa-print');
+    
+    // 1. Salva os estilos originais de todas as camadas
+    const originalAppHeight = containerApp.style.height;
+    const originalAppMaxHeight = containerApp.style.maxHeight;
+    const originalAppOverflow = containerApp.style.overflow;
+    
+    const originalWrapperFlex = wrapper.style.flex;
+    const originalWrapperOverflow = wrapper.style.overflow;
+    
+    const originalListMaxHeight = lista.style.maxHeight;
+    const originalListOverflow = lista.style.overflowY;
+
+    // 2. Destrava TODAS as alturas (Container principal, wrapper da tabela e a lista)
+    containerApp.style.height = 'auto';
+    containerApp.style.maxHeight = 'none';
+    containerApp.style.overflow = 'visible';
+    
+    wrapper.style.flex = 'none';
+    wrapper.style.overflow = 'visible';
+    
+    lista.style.maxHeight = 'none';
+    lista.style.overflowY = 'visible';
+    
+    btnImpressora.style.color = '#EF4444'; 
+
+    // Pausa de 300ms para o navegador recalcular e esticar o layout antes da foto
+    await new Promise(resolve => setTimeout(resolve, 300));
+
+    // 3. Captura a imagem (agora o container esticou 100%)
+    html2canvas(containerApp, {
+        useCORS: true, 
+        allowTaint: true, 
+        scale: 2, 
+        backgroundColor: "#F8FAFC"
+    }).then(canvas => {
+        const urlImagem = canvas.toDataURL("image/png");
+        const linkDownload = document.createElement('a');
+        const nomeMesFormatado = document.getElementById('appPeriodo').innerText.replace(/\s+/g, '_');
         
-        function formatarPeriodoTexto(anoMesStr) {
-            if(!anoMesStr || !anoMesStr.includes('-')) return "GESTÃO FINANCEIRA";
-            const mesesExtenso = ["JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL", "MAIO", "JUNHO", "JULHO", "AGOSTO", "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO"];
-            const partes = anoMesStr.split('-');
-            return `BALANÇO FINANCEIRO - ${mesesExtenso[parseInt(partes[1], 10) - 1]}/${partes[0]}`;
-        }
-
-        function render() {
-            document.getElementById('appPeriodo').innerText = formatarPeriodoTexto(mesSelecionadoAtual);
-            const listContainer = document.getElementById('transactionList');
-            listContainer.innerHTML = '';
-            let totalEntradas = 0, totalSaidas = 0;
-
-            const lancamentosFiltrados = lancamentos.filter(item => item.data && item.data.substring(0, 7) === mesSelecionadoAtual);
-            lancamentosFiltrados.sort((a, b) => new Date(a.data) - new Date(b.data));
-
-            lancamentosFiltrados.forEach((item, index) => {
-                if (item.tipo === 'entrada') totalEntradas += item.valor;
-                if (item.tipo === 'saida') totalSaidas += item.valor;
-
-                const row = document.createElement('div');
-                row.className = 'transaction-item';
-                row.innerHTML = `
-                    <div class="desc" onclick="cliqueDescricao(${index})">${item.descricao}</div>
-                    <div class="${item.tipo}">${formatMoeda(item.valor)}</div>
-                    <div>${formatData(item.data)}</div>
-                    <div class="foto-btn ${item.fotoUrl ? 'has-file' : ''}" ${item.fotoUrl ? `onclick="exibirComprovante('${item.id}')"` : ''}>
-                        <i class="fa-solid fa-receipt"></i>
-                    </div>`;
-                listContainer.appendChild(row);
-            });
-
-            if(lancamentosFiltrados.length === 0) {
-                listContainer.innerHTML = '<div style="text-align:center; padding:35px; color:#94A3B8; font-size:11px;">Sem lançamentos ativos neste período.</div>';
-            }
-
-            const saldo = totalEntradas - totalSaidas;
-            const caixaBaseMes = obterCaixaBaseDoMes(mesSelecionadoAtual);
-
-            document.getElementById('txtEntradas').innerText = formatMoeda(totalEntradas);
-            document.getElementById('txtSaidas').innerText = formatMoeda(totalSaidas);
-            document.getElementById('txtSaldo').innerText = (saldo >= 0 ? "+" : "") + formatMoeda(saldo);
-            document.getElementById('txtCaixaMaio').innerText = formatMoeda(caixaBaseMes);
-            document.getElementById('txtBalanco').innerText = formatMoeda(saldo + caixaBaseMes);
-        }
+        linkDownload.download = `Balanco_Supabase_${nomeMesFormatado}.png`;
+        linkDownload.href = urlImagem;
+        document.body.appendChild(linkDownload);
+        linkDownload.click();
+        document.body.removeChild(linkDownload);
         
-        // Dispara as funções iniciais
-        carregarDadosDaNuvem();
-        escutarMudancasEmTempoReal();
-    </script>
+        // 4. Restaura tudo ao normal (Reativa o Scroll)
+        containerApp.style.height = originalAppHeight;
+        containerApp.style.maxHeight = originalAppMaxHeight;
+        containerApp.style.overflow = originalAppOverflow;
+        
+        wrapper.style.flex = originalWrapperFlex;
+        wrapper.style.overflow = originalWrapperOverflow;
+        
+        lista.style.maxHeight = originalListMaxHeight;
+        lista.style.overflowY = originalListOverflow;
+        
+        btnImpressora.style.color = 'var(--accent-color)';
+    }).catch((err) => { 
+        console.error("Erro ao gerar imagem:", err);
+        // Restaura tudo em caso de erro para não estragar o app
+        containerApp.style.height = originalAppHeight;
+        containerApp.style.maxHeight = originalAppMaxHeight;
+        containerApp.style.overflow = originalAppOverflow;
+        wrapper.style.flex = originalWrapperFlex;
+        wrapper.style.overflow = originalWrapperOverflow;
+        lista.style.maxHeight = originalListMaxHeight;
+        lista.style.overflowY = originalListOverflow;
+        btnImpressora.style.color = 'var(--accent-color)'; 
+    });
+}
 
-    <script>
-        // Script inteligente para o aviso de instalação do PWA no celular
-        let eventoInstalacao;
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            eventoInstalacao = e;
-            
-            setTimeout(() => {
-                if(!localStorage.getItem('pwa_instalado_ignorado')) {
-                    const barraInstalar = document.createElement('div');
-                    barraInstalar.id = 'bannerPWA';
-                    barraInstalar.style = "position:fixed; top:12px; left:50%; transform:translateX(-50%); width:92%; max-width:360px; background:#0A369D; color:white; padding:12px 16px; border-radius:12px; box-shadow:0 10px 25px rgba(0,0,0,0.25); z-index:99999; display:flex; justify-content:space-between; align-items:center; font-size:12px; font-weight:bold; border:1px solid rgba(255,255,255,0.1); font-family:'Roboto',sans-serif;";
-                    barraInstalar.innerHTML = `
-                        <span>🏠 Instalar App no Celular?</span>
-                        <div style="display:flex; align-items:center; gap:10px;">
-                            <button onclick="dispararInstalacaoPWA()" style="background:white; color:#0A369D; border:none; padding:6px 14px; border-radius:6px; font-weight:700; cursor:pointer; font-size:11px; text-transform:uppercase;">Instalar</button>
-                            <button onclick="document.getElementById('bannerPWA').remove(); localStorage.setItem('pwa_instalado_ignorado', 'true');" style="background:transparent; color:white; border:none; font-size:14px; cursor:pointer; padding:2px 4px;">✕</button>
-                        </div>
-                    `;
-                    document.body.appendChild(barraInstalar);
-                }
-            }, 3000);
-        });
 
-        async function dispararInstalacaoPWA() {
-            if (eventoInstalacao) {
-                eventoInstalacao.prompt();
-                const { outcome } = await eventoInstalacao.userChoice;
-                document.getElementById('bannerPWA').remove();
-                eventoInstalacao = null;
-            }
-        }
-    </script>
+
+function formatMoeda(valor) { return (valor || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); }
+
+function formatData(dataStr) { if(!dataStr) return "-"; const partes = dataStr.split('-'); return `${partes[2]}/${partes[1]}`; }
+
+
+function formatarPeriodoTexto(anoMesStr) {
+
+if(!anoMesStr || !anoMesStr.includes('-')) return "GESTÃO FINANCEIRA";
+
+const mesesExtenso = ["JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL", "MAIO", "JUNHO", "JULHO", "AGOSTO", "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO"];
+
+const partes = anoMesStr.split('-');
+
+return `BALANÇO FINANCEIRO - ${mesesExtenso[parseInt(partes[1], 10) - 1]}/${partes[0]}`;
+
+}
+
+
+
+function render() {
+
+document.getElementById('appPeriodo').innerText = formatarPeriodoTexto(mesSelecionadoAtual);
+
+const listContainer = document.getElementById('transactionList');
+
+listContainer.innerHTML = '';
+
+let totalEntradas = 0, totalSaidas = 0;
+
+
+
+const lancamentosFiltrados = lancamentos.filter(item => item.data && item.data.substring(0, 7) === mesSelecionadoAtual);
+
+lancamentosFiltrados.sort((a, b) => new Date(a.data) - new Date(b.data));
+
+
+
+lancamentosFiltrados.forEach((item, index) => {
+
+if (item.tipo === 'entrada') totalEntradas += item.valor;
+
+if (item.tipo === 'saida') totalSaidas += item.valor;
+
+
+
+const row = document.createElement('div');
+
+row.className = 'transaction-item';
+
+row.innerHTML = `
+
+<div class="desc" onclick="cliqueDescricao(${index})">${item.descricao}</div>
+
+<div class="${item.tipo}">${formatMoeda(item.valor)}</div>
+
+<div>${formatData(item.data)}</div>
+
+<div class="foto-btn ${item.fotoUrl ? 'has-file' : ''}" ${item.fotoUrl ? `onclick="exibirComprovante('${item.id}')"` : ''}>
+
+<i class="fa-solid fa-receipt"></i>
+
+</div>`;
+
+listContainer.appendChild(row);
+
+});
+
+
+
+if(lancamentosFiltrados.length === 0) {
+
+listContainer.innerHTML = '<div style="text-align:center; padding:35px; color:#94A3B8; font-size:11px;">Sem lançamentos ativos neste período.</div>';
+
+}
+
+
+
+const saldo = totalEntradas - totalSaidas;
+
+const caixaBaseMes = obterCaixaBaseDoMes(mesSelecionadoAtual);
+
+
+
+document.getElementById('txtEntradas').innerText = formatMoeda(totalEntradas);
+
+document.getElementById('txtSaidas').innerText = formatMoeda(totalSaidas);
+
+document.getElementById('txtSaldo').innerText = (saldo >= 0 ? "+" : "") + formatMoeda(saldo);
+
+document.getElementById('txtCaixaMaio').innerText = formatMoeda(caixaBaseMes);
+
+document.getElementById('txtBalanco').innerText = formatMoeda(saldo + caixaBaseMes);
+
+}
+
+
+// Dispara as funções iniciais
+
+carregarDadosDaNuvem();
+
+escutarMudancasEmTempoReal();
+
+</script>
+
+
+
+<script>
+
+// Script inteligente para o aviso de instalação do PWA no celular
+
+let eventoInstalacao;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+
+e.preventDefault();
+
+eventoInstalacao = e;
+
+
+setTimeout(() => {
+
+if(!localStorage.getItem('pwa_instalado_ignorado')) {
+
+const barraInstalar = document.createElement('div');
+
+barraInstalar.id = 'bannerPWA';
+
+barraInstalar.style = "position:fixed; top:12px; left:50%; transform:translateX(-50%); width:92%; max-width:360px; background:#0A369D; color:white; padding:12px 16px; border-radius:12px; box-shadow:0 10px 25px rgba(0,0,0,0.25); z-index:99999; display:flex; justify-content:space-between; align-items:center; font-size:12px; font-weight:bold; border:1px solid rgba(255,255,255,0.1); font-family:'Roboto',sans-serif;";
+
+barraInstalar.innerHTML = `
+
+<span>🏠 Instalar App no Celular?</span>
+
+<div style="display:flex; align-items:center; gap:10px;">
+
+<button onclick="dispararInstalacaoPWA()" style="background:white; color:#0A369D; border:none; padding:6px 14px; border-radius:6px; font-weight:700; cursor:pointer; font-size:11px; text-transform:uppercase;">Instalar</button>
+
+<button onclick="document.getElementById('bannerPWA').remove(); localStorage.setItem('pwa_instalado_ignorado', 'true');" style="background:transparent; color:white; border:none; font-size:14px; cursor:pointer; padding:2px 4px;">✕</button>
+
+</div>
+
+`;
+
+document.body.appendChild(barraInstalar);
+
+}
+
+}, 3000);
+
+});
+
+
+
+async function dispararInstalacaoPWA() {
+
+if (eventoInstalacao) {
+
+eventoInstalacao.prompt();
+
+const { outcome } = await eventoInstalacao.userChoice;
+
+document.getElementById('bannerPWA').remove();
+
+eventoInstalacao = null;
+
+}
+
+}
+
+</script>
+
 </body>
+
 </html>
