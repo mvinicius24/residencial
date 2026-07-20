@@ -22,80 +22,85 @@
 --text-secondary: #64748B;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Roboto', sans-serif; }
-body { 
-    background-color: #E2E8F0; 
-    color: var(--primary-color); 
-    display: flex; 
-    justify-content: center; 
-    align-items: center; 
-    min-height: 100vh; 
+body {
+    background-color: #E2E8F0;
+    color: var(--primary-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
 }
 .app-container {
-    width: 100%; max-width: 412px; height: 92vh; max-height: 850px;
-    background-color: var(--bg-color); padding: 16px; position: relative;
+    width: 100%; max-width: 412px; height: 100vh; max-height: 850px;
+    background-color: var(--bg-color); padding: 12px 16px; position: relative;
     box-shadow: 0 10px 25px rgba(0,0,0,0.1); display: flex; flex-direction: column;
-    border-radius: 16px; overflow: hidden;
+    border-radius: 0; overflow: hidden;
+}
+@media (min-width: 413px) {
+    .app-container { border-radius: 16px; height: 92vh; }
 }
 
 /* Cabeçalho Limpo */
-.header { 
-    display: flex; 
-    align-items: center; 
-    background: white; 
-    padding: 10px 12px; 
-    border-radius: 12px; 
-    box-shadow: 0 2px 8px rgba(0,0,0,0.02); 
-    margin-bottom: 12px; 
-    position: relative; 
-    gap: 12px; 
-}
-.header-logo { 
-    width: 120px; 
-    height: auto; 
-    object-fit: contain; 
+.header {
+    display: flex;
+    align-items: center;
+    background: white;
+    padding: 8px 12px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    margin-bottom: 8px;
+    position: relative;
+    gap: 12px;
     flex-shrink: 0;
 }
-.header-info { 
-    display: flex; 
-    flex-direction: column; 
-    align-items: flex-start; 
-    flex: 1; 
+.header-logo {
+    width: 120px;
+    height: auto;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+.header-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    flex: 1;
     gap: 2px;
 }
-.header-info p { 
-    font-size: 10px; 
-    font-weight: 700; 
-    letter-spacing: 0.4px; 
-    text-transform: uppercase; 
-    color: var(--accent-color); 
-    text-align: left; 
+.header-info p {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    color: var(--accent-color);
+    text-align: left;
 }
-.status-nuvem { 
-    font-size: 9px; 
-    font-weight: bold; 
-    color: #10B981; 
-    display: flex; 
-    align-items: center; 
+.status-nuvem {
+    font-size: 9px;
+    font-weight: bold;
+    color: #10B981;
+    display: flex;
+    align-items: center;
     justify-content: center;
     width: 85%;
-    gap: 3px; 
+    gap: 3px;
 }
 .status-nuvem.carregando { color: #F59E0B; }
-.admin-lock-btn { 
-    position: absolute; 
-    top: 6px; 
-    right: 8px; 
-    font-size: 13px; 
-    color: #94A3B8; 
-    cursor: pointer; 
-    padding: 4px; 
-    z-index: 10; 
+.admin-lock-btn {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    font-size: 13px;
+    color: #94A3B8;
+    cursor: pointer;
+    padding: 4px;
+    z-index: 10;
 }
 body.modo-restrito .admin-lock-btn { color: var(--saida-color); }
 
 /* Cards Alinhados no Topo */
-.dashboard-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 10px; }
-.card { background: var(--card-bg); padding: 10px 6px; border-radius: 10px; border: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: center; text-align: center; gap: 4px; }
+.dashboard-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 8px; flex-shrink: 0; }
+.card { background: var(--card-bg); padding: 8px 6px; border-radius: 10px; border: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: center; text-align: center; gap: 4px; }
 .card-title { font-size: 10px; font-weight: 700; color: var(--text-secondary); display: flex; align-items: center; gap: 3px; }
 .card-value { font-size: 12px; font-weight: 700; }
 
@@ -106,38 +111,28 @@ body.modo-restrito .admin-lock-btn { color: var(--saida-color); }
 .card.saldo-card { border-top: 3px solid var(--accent-color); background: #EEF2FF; }
 .card.saldo-card .card-value { color: var(--accent-color); }
 
-.caixa-geral-box { background: var(--card-bg); padding: 10px 14px; border-radius: 12px; border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; font-size: 12px; margin-bottom: 8px; }
+.caixa-geral-box { background: var(--card-bg); padding: 8px 14px; border-radius: 12px; border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; font-size: 12px; margin-bottom: 6px; flex-shrink: 0; }
 .caixa-geral-box span { font-weight: 500; color: var(--text-secondary); }
 .caixa-geral-box strong { font-size: 14px; font-weight: 700; color: var(--primary-color); }
 
 /* Barra de Ações com Ícones de Calendário e Impressão */
-.action-bar { display: flex; justify-content: space-between; align-items: center; margin: 4px 0 8px 0; padding: 0 4px; }
+.action-bar { display: flex; justify-content: space-between; align-items: center; margin: 4px 0 6px 0; padding: 0 4px; flex-shrink: 0; }
 .left-actions { display: flex; align-items: center; gap: 14px; font-size: 20px; color: var(--accent-color); }
 .left-actions i { cursor: pointer; padding: 4px; }
 .right-actions { font-size: 20px; color: var(--accent-color); }
 .right-actions i { cursor: pointer; padding: 4px; }
 
 /* Definição de cores individuais para os ícones da barra de ações */
-.left-actions .fa-calendar-days {
-    color: #059669; /* Azul padrão */
-}
+.left-actions .fa-calendar-days { color: #059669; }
+.left-actions .fa-print { color: #059669; }
+.left-actions .fa-circle-dollar-to-slot { color: #059669; }
+.right-actions .fa-square-plus { color: #059669; }
 
-.left-actions .fa-print {
-    color: #059669; /* Verde escolhido para a impressora */
-}
-
-.left-actions .fa-circle-dollar-to-slot {
-    color: #059669; /* Laranja para o cofrinho de fundo inicial */
-}
-
-.right-actions .fa-square-plus {
-    color: #059669; /* Azul para o botão de novo lançamento */
-}
-
-.table-wrapper { display: flex; flex-direction: column; flex: 1; background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border-color); overflow: hidden; margin-bottom: 5px; }
-.table-header { display: grid; grid-template-columns: 2.2fr 1fr 1fr 0.6fr; padding: 10px; background: #F1F5F9; border-bottom: 1px solid var(--border-color); font-weight: 700; font-size: 12px; text-align: center; color: var(--text-secondary); }
+/* Estrutura Fixa da Tabela com Rolagem Interna Isolada */
+.table-wrapper { display: flex; flex-direction: column; flex: 1; background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border-color); overflow: hidden; min-height: 0; }
+.table-header { display: grid; grid-template-columns: 2.2fr 1fr 1fr 0.6fr; padding: 10px; background: #F1F5F9; border-bottom: 1px solid var(--border-color); font-weight: 700; font-size: 12px; text-align: center; color: var(--text-secondary); flex-shrink: 0; }
 .table-header div:first-child { text-align: left; padding-left: 4px; }
-.transaction-list { flex: 1; overflow-y: auto; }
+.transaction-list { flex: 1; overflow-y: auto; overflow-x: hidden; }
 .transaction-item { display: grid; grid-template-columns: 2.2fr 1fr 1fr 0.6fr; padding: 11px 10px; border-bottom: 1px solid #F1F5F9; font-size: 12px; align-items: center; text-align: center; }
 .transaction-item:last-child { border-bottom: none; }
 .transaction-item .desc { text-align: left; padding-left: 4px; font-weight: 500; word-break: break-word; padding-right: 4px; color: var(--primary-color); }
@@ -235,7 +230,7 @@ body.modo-restrito i.restricted-element { display: inline-block !important; }
 </div>
 </div>
 
-<!-- Modal de Seleção de Período (Igualzinho à sua referência) -->
+<!-- Modal de Seleção de Período -->
 <div class="modal" id="filtroModal">
 <div class="modal-content">
 <h3><i class="fa-solid fa-calendar-days" style="color: var(--accent-color);"></i> Selecionar Período</h3>
@@ -635,21 +630,21 @@ wrapper.style.flex = 'none';
 wrapper.style.overflow = 'visible';
 lista.style.maxHeight = 'none';
 lista.style.overflowY = 'visible';
-iconeCalendario.style.display = 'none'; // Oculta o ícone no print para preservar a estética limpa
-btnImpressora.style.color = '#EF4444'; 
+iconeCalendario.style.display = 'none'; 
+btnImpressora.style.color = '#EF4444';
 
 await new Promise(resolve => setTimeout(resolve, 300));
 
 html2canvas(containerApp, {
-useCORS: true, 
-allowTaint: true, 
-scale: 2, 
+useCORS: true,
+allowTaint: true,
+scale: 2,
 backgroundColor: "#F8FAFC"
 }).then(canvas => {
 const urlImagem = canvas.toDataURL("image/png");
 const linkDownload = document.createElement('a');
 const nomeMesFormatado = document.getElementById('appPeriodo').innerText.replace(/\s+/g, '_');
-linkDownload.download = `{nomeMesFormatado}.png`;
+linkDownload.download = `${nomeMesFormatado}.png`;
 linkDownload.href = urlImagem;
 document.body.appendChild(linkDownload);
 linkDownload.click();
@@ -664,7 +659,7 @@ lista.style.maxHeight = originalListMaxHeight;
 lista.style.overflowY = originalListOverflow;
 iconeCalendario.style.display = originalCalendarDisplay;
 btnImpressora.style.color = 'var(--accent-color)';
-}).catch((err) => { 
+}).catch((err) => {
 console.error("Erro ao gerar imagem:", err);
 containerApp.style.height = originalAppHeight;
 containerApp.style.maxHeight = originalAppMaxHeight;
@@ -674,7 +669,7 @@ wrapper.style.overflow = originalWrapperOverflow;
 lista.style.maxHeight = originalListMaxHeight;
 lista.style.overflowY = originalListOverflow;
 iconeCalendario.style.display = originalCalendarDisplay;
-btnImpressora.style.color = 'var(--accent-color)'; 
+btnImpressora.style.color = 'var(--accent-color)';
 });
 }
 
