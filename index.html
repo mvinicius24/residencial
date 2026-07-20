@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Residencial Maria de Lourdes - Supabase Realtime</title>
+<title>Residencial Maria de Lourdes</title>
 <link rel="manifest" href="manifest.json?v=7">
 <meta name="theme-color" content="#0A369D">
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
@@ -649,7 +649,7 @@ backgroundColor: "#F8FAFC"
 const urlImagem = canvas.toDataURL("image/png");
 const linkDownload = document.createElement('a');
 const nomeMesFormatado = document.getElementById('appPeriodo').innerText.replace(/\s+/g, '_');
-linkDownload.download = `Balanco_Supabase_${nomeMesFormatado}.png`;
+linkDownload.download = `{nomeMesFormatado}.png`;
 linkDownload.href = urlImagem;
 document.body.appendChild(linkDownload);
 linkDownload.click();
