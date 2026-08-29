@@ -1,1562 +1,440 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-
-<meta charset="UTF-8">
-
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0">
-
-<title>
-Cronograma - Residencial Maria de Lourdes
-</title>
-
-
-<style>
-
-/* =====================================================
-   CONFIGURAÇÕES GERAIS
-===================================================== */
-
-* {
-    box-sizing: border-box;
-}
-
-body {
-
-    margin: 0;
-
-    padding: 20px;
-
-    background: #eef0f2;
-
-    font-family:
-        Arial,
-        Helvetica,
-        sans-serif;
-
-    color: #18233a;
-
-}
-
-
-.container {
-
-    width: 100%;
-
-    max-width: 850px;
-
-    margin: auto;
-
-}
-
-
-/* =====================================================
-   PAINEL DE CONFIGURAÇÃO
-===================================================== */
-
-.config {
-
-    background: white;
-
-    padding: 22px;
-
-    border-radius: 16px;
-
-    box-shadow:
-        0 4px 20px rgba(0,0,0,.12);
-
-    margin-bottom: 25px;
-
-}
-
-
-h1 {
-
-    text-align: center;
-
-    font-size: 24px;
-
-    margin-top: 0;
-
-}
-
-
-h2 {
-
-    font-size: 18px;
-
-    margin-top: 25px;
-
-}
-
-
-.secao {
-
-    border-top: 1px solid #ddd;
-
-    padding-top: 15px;
-
-    margin-top: 15px;
-
-}
-
-
-/* =====================================================
-   LOGO
-===================================================== */
-
-.logo-info {
-
-    background: #f7f8f9;
-
-    border: 1px solid #ddd;
-
-    border-radius: 10px;
-
-    padding: 15px;
-
-    text-align: center;
-
-}
-
-
-.logo-info strong {
-
-    display: block;
-
-    margin-bottom: 5px;
-
-}
-
-
-.logo-preview {
-
-    max-width: 260px;
-
-    max-height: 130px;
-
-    object-fit: contain;
-
-    margin-top: 10px;
-
-}
-
-
-/* =====================================================
-   CONTROLE DA LOGO
-===================================================== */
-
-.controle-logo {
-
-    display: grid;
-
-    grid-template-columns:
-        1fr 1fr;
-
-    gap: 10px;
-
-    margin-top: 15px;
-
-}
-
-
-.controle-logo label {
-
-    display: block;
-
-    text-align: left;
-
-    font-size: 13px;
-
-    font-weight: bold;
-
-}
-
-
-.controle-logo input {
-
-    width: 100%;
-
-    margin-top: 5px;
-
-    padding: 9px;
-
-    border: 1px solid #bbb;
-
-    border-radius: 7px;
-
-}
-
-
-/* =====================================================
-   LINHAS DAS CASAS
-===================================================== */
-
-.linha {
-
-    display: grid;
-
-    grid-template-columns:
-        90px
-        1fr
-        1fr
-        70px;
-
-    gap: 8px;
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cronograma de Limpeza</title>
+    <!-- HTML2Canvas para exportar imagem -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        /* Padroniza a fonte Arial para absolutamente todos os elementos do documento */
+        *, *::before, *::after, input, button, select, textarea {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif !important;
+        }
+
+        body {
+            background-color: #cfd4da;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Botões de Ação no Topo */
+        .acoes-topo {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 1001;
+        }
+
+        .btn-icone {
+            background: #ffffff;
+            border: 1px solid #bbb;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
+            font-size: 18px;
+        }
+
+        .btn-icone:hover {
+            background: #f0f0f0;
+        }
+
+        /* Moldura Metálica */
+        .moldura-quadro {
+            background-color: #bcbec0;
+            padding: 18px;
+            border-radius: 4px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+            border: 2px solid #9ea0a3;
+        }
+
+        /* Folha Interna */
+        .folha-container {
+            background-color: #f7f7f5;
+            width: 360px;
+            padding: 25px 20px 25px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+/* Container do Check verde do Iconpacks */
+.check-icon-container {
+    display: inline-flex;
     align-items: center;
-
-    margin-bottom: 10px;
-
-}
-
-
-.linha strong {
-
-    font-size: 15px;
-
-}
-
-
-.linha input[type="text"] {
-
-    width: 100%;
-
-    padding: 10px;
-
-    border: 1px solid #bbb;
-
-    border-radius: 8px;
-
-    font-size: 15px;
-
-}
-
-
-.check {
-
-    display: flex;
-
     justify-content: center;
-
-    align-items: center;
-
-}
-
-
-.check input {
-
     width: 22px;
-
     height: 22px;
+}
 
-    cursor: pointer;
+.img-check {
+    width: 22px;
+    height: 22px;
+    display: block;
+}
 
+/* Marcação verde no texto da linha concluída */
+tr.concluido td {
+    color: #00b074;
 }
 
 
-/* =====================================================
-   BOTÕES
-===================================================== */
-
-button {
-
+        /* Container da Logo ajustado */
+        .logo-container {
     width: 100%;
-
-    padding: 15px;
-
-    border: none;
-
-    border-radius: 10px;
-
-    margin-top: 10px;
-
-    font-size: 16px;
-
-    font-weight: bold;
-
-    cursor: pointer;
-
-}
-
-
-.btn-gerar {
-
-    background: #18233a;
-
-    color: white;
-
-}
-
-
-.btn-salvar {
-
-    background: #56785d;
-
-    color: white;
-
-}
-
-
-.btn-limpar {
-
-    background: #e4e6e9;
-
-    color: #18233a;
-
-}
-
-
-/* =====================================================
-   PREVISUALIZAÇÃO
-===================================================== */
-
-.preview {
-
     display: flex;
-
     justify-content: center;
-
+    align-items: center;
+    position: relative; /* Permite mover a logo com precisão */
+    top: -30px;  /* Valore positivo move para BAIRRO, negativo para CIMA */
+    left: 0px; /* Valore positivo move para DIREITA, negativo para ESQUERDA */
+    margin-top: 5px;
+    margin-bottom: 15px;
 }
+        .logo-img {
+            max-width: 170px;
+            height: auto;
+            display: block;
+        }
 
-
-canvas {
-
+       /* Linha Decorativa do Título (Estrutura global) */
+.titulo-box {
     width: 100%;
-
-    max-width: 600px;
-
-    height: auto;
-
-    background: white;
-
-    box-shadow:
-        0 8px 30px rgba(0,0,0,.20);
-
+    border-top: 1px solid #16243e;
+    position: relative;
+    
+    /* Posição Exata do Conjunto (Linha + Texto) */
+    top: -30px;       /* Positivo desce o conjunto todo | Negativo sobe */
+    left: 0px;      /* Positivo move para a direita | Negativo move para a esquerda */
+    
+    margin-top: 5px;
+    margin-bottom: 25px; /* Espaço para a tabela não colar ao descer o título */
+    text-align: center;
 }
 
-
-/* =====================================================
-   CELULAR
-===================================================== */
-
-@media(max-width:650px) {
-
-    body {
-
-        padding: 10px;
-
-    }
-
-
-    .config {
-
-        padding: 15px;
-
-    }
-
-
-    .linha {
-
-        grid-template-columns:
-            70px
-            1fr
-            1fr
-            55px;
-
-        gap: 5px;
-
-    }
-
-
-    .controle-logo {
-
-        grid-template-columns:
-            1fr;
-
-    }
-
+/* Texto do Título */
+.titulo-texto {
+    background-color: #f7f7f5;
+    padding: 0 8px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #16243e;
+    position: relative;
+    
+    /* Centralização Vertical sobre a Linha */
+    top: -50px;     /* Como a fonte aumentou para 16px, ajuste entre -10px e -12px para que a linha corte exatamente o meio do texto */
+    
+    display: inline-block;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    text-align: center;
 }
 
-</style>
+        /* Tabela de Dados */
+        .tabela-container {
+    width: 100%;
+    position: relative;
+    top: -30px;       /* Positivo desce a tabela | Negativo sobe */
+    left: 0px;      /* Positivo move para a direita | Negativo move para a esquerda */
+    margin-top: 10px; /* Distância em relação ao título */
+}
 
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+    font-size: 11px;
+    font-weight: bold;
+    color: #16243e;
+    padding-bottom: 8px;
+    border-bottom: 1.5px solid #16243e;
+    text-transform: uppercase;
+    white-space: nowrap; /* Impede a quebra de linha no cabeçalho */
+}
+
+        td {
+            padding: 11px 4px;
+            font-size: 14px;
+            color: #16243e;
+            text-align: center;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        tr:last-child td {
+            border-bottom: 1.5px solid #16243e;
+        }
+
+        .col-check { width: 22%; }
+        .col-data { width: 48%; }
+        .col-unidade { width: 30%; }
+
+        /* Painel de Edição Centralizado (Modal) */
+        .painel-edicao-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.4);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .painel-edicao-overlay.ativo {
+            display: flex;
+        }
+
+        .painel-edicao {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 10px 30px rgba(0,0,0,0.3);
+            max-height: 80vh;
+            overflow-y: auto;
+            width: 90%;
+            max-width: 450px;
+            font-size: 13px;
+        }
+
+        .painel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+
+        .painel-header h3 {
+            margin: 0;
+            color: #16243e;
+            font-size: 14px;
+        }
+
+        .btn-fechar {
+            background: transparent;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #666;
+        }
+
+        .linha-editor {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #f0f0f0;
+            padding-bottom: 6px;
+        }
+
+        .linha-editor input[type="date"], 
+        .linha-editor input[type="text"] {
+            padding: 5px;
+            font-size: 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+    </style>
 </head>
-
-
 <body>
 
-
-<div class="container">
-
-
-<!-- =====================================================
-     PAINEL
-===================================================== -->
-
-<div class="config">
-
-
-<h1>
-🧹 Residencial Maria de Lourdes
-</h1>
-
-
-<p style="text-align:center;">
-
-Gerador do Cronograma de Limpeza
-
-</p>
-
-
-
-<!-- =====================================================
-     LOGO
-===================================================== -->
-
-<div class="secao">
-
-
-<h2>
-🖼️ Logo
-</h2>
-
-
-<div class="logo-info">
-
-
-<strong>
-Logo carregada automaticamente:
-</strong>
-
-
-<span>
-logo.png
-</span>
-
-
-<br>
-
-
-<img
-    id="previewLogo"
-    class="logo-preview"
-    alt="Logo do Residencial">
-
-
-<div class="controle-logo">
-
-
-<div>
-
-<label>
-Largura da logo
-</label>
-
-
-<input
-    type="number"
-    id="logoLargura"
-    value="260"
-    min="50"
-    max="700"
-    onchange="gerarImagem()">
-
-
-</div>
-
-
-<div>
-
-<label>
-Altura máxima
-</label>
-
-
-<input
-    type="number"
-    id="logoAltura"
-    value="150"
-    min="50"
-    max="400"
-    onchange="gerarImagem()">
-
-
-</div>
-
-
-</div>
-
-
-</div>
-
-</div>
-
-
-
-<!-- =====================================================
-     CASAS
-===================================================== -->
-
-<div class="secao">
-
-
-<h2>
-📋 Datas e Checks
-</h2>
-
-
-<div id="linhas"></div>
-
-
-</div>
-
-
-
-<!-- =====================================================
-     BOTÕES
-===================================================== -->
-
-<button
-    class="btn-gerar"
-    onclick="gerarImagem()">
-
-🔄 ATUALIZAR IMAGEM
-
-</button>
-
-
-<button
-    class="btn-salvar"
-    onclick="salvarImagem()">
-
-💾 SALVAR IMAGEM PNG
-
-</button>
-
-
-<button
-    class="btn-limpar"
-    onclick="limparChecks()">
-
-☐ DESMARCAR TODOS
-
-</button>
-
-
-</div>
-
-
-
-<!-- =====================================================
-     PREVIEW
-===================================================== -->
-
-<div class="preview">
-
-
-<canvas
-    id="canvas"
-    width="1200"
-    height="1600">
-</canvas>
-
-
-</div>
-
-
-</div>
-
-
-
-<script>
-
-
-/* =====================================================
-   CONFIGURAÇÃO DA LOGO
-
-   A logo precisa estar na mesma pasta do index.html
-===================================================== */
-
-const URL_LOGO = "logo.png";
-
-
-/* =====================================================
-   CASAS
-
-   true  = check marcado
-   false = check desmarcado
-===================================================== */
-
-const casas = [
-
-    {
-        casa: "Casa 06",
-        inicio: "31/08",
-        fim: "04/09",
-        check: true
-    },
-
-    {
-        casa: "Casa 01",
-        inicio: "12/09",
-        fim: "18/09",
-        check: true
-    },
-
-    {
-        casa: "Casa 02",
-        inicio: "28/09",
-        fim: "02/10",
-        check: true
-    },
-
-    {
-        casa: "Casa 03",
-        inicio: "12/10",
-        fim: "16/10",
-        check: true
-    },
-
-    {
-        casa: "Casa 04",
-        inicio: "26/10",
-        fim: "30/10",
-        check: true
-    },
-
-    {
-        casa: "Casa 05",
-        inicio: "09/11",
-        fim: "13/11",
-        check: false
-    }
-
-];
-
-
-
-/* =====================================================
-   VARIÁVEL DA LOGO
-===================================================== */
-
-let logoSelecionada = null;
-
-
-
-/* =====================================================
-   CARREGAR LOGO
-===================================================== */
-
-function carregarLogo() {
-
-    logoSelecionada = new Image();
-
-    /*
-       Isso permite que o navegador tente carregar
-       a imagem corretamente.
-    */
-
-    logoSelecionada.crossOrigin = "anonymous";
-
-
-    logoSelecionada.onload = function() {
-
-        document.getElementById(
-            "previewLogo"
-        ).src = URL_LOGO;
-
-
-        gerarImagem();
-
-    };
-
-
-    logoSelecionada.onerror = function() {
-
-        console.log(
-            "Não foi possível carregar logo.png"
-        );
-
-
-        gerarImagem();
-
-    };
-
-
-    logoSelecionada.src = URL_LOGO;
-
-}
-
-
-
-/* =====================================================
-   CRIAR CAMPOS DAS CASAS
-===================================================== */
-
-function criarCampos() {
-
-    const div =
-        document.getElementById("linhas");
-
-
-    div.innerHTML = "";
-
-
-    casas.forEach(
-        (item,index) => {
-
-
-        const linha =
-            document.createElement("div");
-
-
-        linha.className =
-            "linha";
-
-
-        linha.innerHTML = `
-
-            <strong>
-                ${item.casa}
-            </strong>
-
-
-            <input
-                type="text"
-                id="inicio${index}"
-                value="${item.inicio}"
-                placeholder="31/08">
-
-
-            <input
-                type="text"
-                id="fim${index}"
-                value="${item.fim}"
-                placeholder="04/09">
-
-
-            <div class="check">
-
-                <input
-                    type="checkbox"
-                    id="check${index}"
-                    ${item.check ? "checked" : ""}>
-
+    <!-- Ícones de Ação -->
+    <div class="acoes-topo">
+        <button class="btn-icone" id="btn-toggle-painel" title="Editar Dados">⚙️</button>
+        <button class="btn-icone" id="btn-salvar-imagem" title="Salvar Imagem">💾</button>
+    </div>
+
+    <!-- Moldura de Alumínio + Folha -->
+    <div class="moldura-quadro" id="area-impressao">
+        <div class="folha-container">
+            
+            <!-- Posicionamento Centralizado da Logo -->
+            <div class="logo-container">
+                <img src="logo.png" alt="Logo Residencial Maria de Lourdes" class="logo-img">
             </div>
 
+            <!-- Linha com o Título Intercalado -->
+            <div >
+                <span class="titulo-texto">CRONOGRAMA DE LIMPEZA DO QUARTO DO LIXO</span>
+            </div>
+
+            <!-- Tabela de Dados com Rótulos Atualizados -->
+            <div class="tabela-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="col-check">📋 CHECK</th>
+                            <th class="col-data">📅 DATAS</th>
+                            <th class="col-unidade">🏠 RESPONSÁVEL</th>
+                        </tr>
+                    </thead>
+                    <tbody id="corpo-tabela">
+                        <!-- Conteúdo dinâmico -->
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Modal Centralizado do Painel de Edição -->
+    <div class="painel-edicao-overlay" id="painelOverlay">
+        <div class="painel-edicao">
+            <div class="painel-header">
+                <h3>Editar Informações</h3>
+                <button class="btn-fechar" id="btn-fechar-painel">✕</button>
+            </div>
+            <div id="controles-container"></div>
+        </div>
+    </div>
+
+    <script>
+        const dadosIniciais = [
+            { check: true, data: '2026-08-31', unidade: 'Casa 06' },
+            { check: false, data: '2026-09-12', unidade: 'Casa 01' },
+            { check: false, data: '2026-09-28', unidade: 'Casa 02' },
+            { check: false, data: '2026-10-12', unidade: 'Casa 03' },
+            { check: false, data: '2026-10-26', unidade: 'Casa 04' },
+            { check: false, data: '2026-11-09', unidade: 'Casa 05' }
+        ];
+
+        function formatarDataBR(dataStr) {
+            if (!dataStr) return '';
+            const partes = dataStr.split('-');
+            return `${partes[2]}/${partes[1]}`;
+        }
+
+        function somarDias(dataStr, dias) {
+            if (!dataStr) return '';
+            const dataObj = new Date(dataStr + 'T00:00:00');
+            dataObj.setDate(dataObj.getDate() + dias);
+            const dia = String(dataObj.getDate()).padStart(2, '0');
+            const mes = String(dataObj.getMonth() + 1).padStart(2, '0');
+            return `${dia}/${mes}`;
+        }
+
+        function atualizarTabela() {
+    const corpoTabela = document.getElementById('corpo-tabela');
+    corpoTabela.innerHTML = '';
+
+    // Vetor SVG exato extraído do iconpacks.net/free-icon/check-3278.html
+    const svgCheck3278 = `
+        <svg class="img-check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+            <path fill="#00b074" d="M256,0C114.615,0,0,114.615,0,256s114.615,256,256,256s256-114.615,256-256S397.385,0,256,0z M384.348,197.652
+            l-150.8,150.8c-6.249,6.248-16.379,6.248-22.628,0l-77.268-77.269c-6.249-6.248-6.249-16.379,0-22.627
+            c6.248-6.249,16.379-6.249,22.627,0l65.955,65.955l139.486-139.486c6.248-6.249,16.379-6.249,22.628,0
+            C390.597,181.273,390.597,191.403,384.348,197.652z"/>
+        </svg>
+    `;
+
+    dadosIniciais.forEach((item) => {
+        const dataInicio = formatarDataBR(item.data);
+        const dataFim = somarDias(item.data, 4);
+        const intervalo = item.data ? `${dataInicio} a ${dataFim}` : '';
+
+        const tr = document.createElement('tr');
+        if (item.check) tr.classList.add('concluido');
+
+        tr.innerHTML = `
+            <td>
+                <span class="check-icon-container">
+                    ${item.check ? svgCheck3278 : ''}
+                </span>
+            </td>
+            <td>${intervalo}</td>
+            <td>${item.unidade}</td>
         `;
-
-
-        div.appendChild(linha);
-
+        corpoTabela.appendChild(tr);
     });
-
 }
 
-
-
-/* =====================================================
-   TEXTO CENTRALIZADO
-===================================================== */
-
-function textoCentral(
-
-    ctx,
-    texto,
-    x,
-    y,
-    tamanho,
-    peso = "normal"
-
-) {
-
-    ctx.font =
-        `${peso} ${tamanho}px Arial`;
-
-
-    ctx.textAlign =
-        "center";
-
-
-    ctx.textBaseline =
-        "middle";
-
-
-    ctx.fillText(
-        texto,
-        x,
-        y
-    );
-
-}
-
-
-
-/* =====================================================
-   DESENHAR LOGO
-===================================================== */
-
-function desenharLogo(
-
-    ctx,
-    imagem,
-    centroX,
-    centroY
-
-) {
-
-    if (
-        !imagem ||
-        !imagem.complete ||
-        imagem.naturalWidth === 0
-    ) {
-
-        return;
-
-    }
-
-
-    let largura = parseInt(
-
-        document.getElementById(
-            "logoLargura"
-        ).value
-
-    );
-
-
-    let alturaMax = parseInt(
-
-        document.getElementById(
-            "logoAltura"
-        ).value
-
-    );
-
-
-    if (!largura) {
-
-        largura = 260;
-
-    }
-
-
-    if (!alturaMax) {
-
-        alturaMax = 150;
-
-    }
-
-
-    /*
-       Mantém a proporção original
-    */
-
-    const proporcao =
-        imagem.naturalWidth /
-        imagem.naturalHeight;
-
-
-    let altura =
-        largura /
-        proporcao;
-
-
-    if (altura > alturaMax) {
-
-        altura = alturaMax;
-
-
-        largura =
-            altura *
-            proporcao;
-
-    }
-
-
-    ctx.drawImage(
-
-        imagem,
-
-        centroX - largura / 2,
-
-        centroY - altura / 2,
-
-        largura,
-
-        altura
-
-    );
-
-}
-
-
-
-/* =====================================================
-   DESENHAR CHECK
-===================================================== */
-
-function desenharCheck(
-
-    ctx,
-    x,
-    y,
-    marcado
-
-) {
-
-    const tamanho = 52;
-
-
-    ctx.strokeStyle =
-        "#1b2942";
-
-
-    ctx.lineWidth = 4;
-
-
-    /*
-       Quadrado
-    */
-
-    ctx.strokeRect(
-
-        x - tamanho / 2,
-
-        y - tamanho / 2,
-
-        tamanho,
-
-        tamanho
-
-    );
-
-
-    /*
-       Check
-    */
-
-    if (marcado) {
-
-        ctx.lineWidth = 7;
-
-
-        ctx.beginPath();
-
-
-        ctx.moveTo(
-
-            x - 20,
-            y
-
-        );
-
-
-        ctx.lineTo(
-
-            x - 5,
-            y + 16
-
-        );
-
-
-        ctx.lineTo(
-
-            x + 25,
-            y - 22
-
-        );
-
-
-        ctx.stroke();
-
-    }
-
-}
-
-
-
-/* =====================================================
-   GERAR IMAGEM
-===================================================== */
-
-function gerarImagem() {
-
-
-    const canvas =
-        document.getElementById(
-            "canvas"
-        );
-
-
-    const ctx =
-        canvas.getContext("2d");
-
-
-    const W =
-        canvas.width;
-
-
-    const H =
-        canvas.height;
-
-
-
-    /* =================================================
-       FUNDO
-    ================================================= */
-
-    ctx.fillStyle =
-        "#ffffff";
-
-
-    ctx.fillRect(
-
-        0,
-        0,
-        W,
-        H
-
-    );
-
-
-
-    /* =================================================
-       BORDA EXTERNA
-    ================================================= */
-
-    ctx.strokeStyle =
-        "#18233a";
-
-
-    ctx.lineWidth = 4;
-
-
-    ctx.strokeRect(
-
-        70,
-        70,
-        W - 140,
-        H - 140
-
-    );
-
-
-
-    /* =================================================
-       CABEÇALHO
-    ================================================= */
-
-    ctx.fillStyle =
-        "#a56b4d";
-
-
-    textoCentral(
-
-        ctx,
-        "RESIDENCIAL",
-        W / 2,
-        125,
-        32,
-        "bold"
-
-    );
-
-
-    ctx.fillStyle =
-        "#18233a";
-
-
-    textoCentral(
-
-        ctx,
-        "MARIA DE LOURDES",
-        W / 2,
-        175,
-        50
-
-    );
-
-
-
-    /* =================================================
-       LOGO
-    ================================================= */
-
-    desenharLogo(
-
-        ctx,
-        logoSelecionada,
-        W / 2,
-        280
-
-    );
-
-
-
-    /* =================================================
-       TÍTULO
-    ================================================= */
-
-    ctx.fillStyle =
-        "#18233a";
-
-
-    textoCentral(
-
-        ctx,
-        "CRONOGRAMA DE LIMPEZA",
-        W / 2,
-        405,
-        34
-
-    );
-
-
-    textoCentral(
-
-        ctx,
-        "QUARTO DO LIXO",
-        W / 2,
-        450,
-        34
-
-    );
-
-
-
-    /* =================================================
-       CONFIGURAÇÃO DA TABELA
-    ================================================= */
-
-    const tabelaX = 110;
-
-    const tabelaY = 510;
-
-    const tabelaW = 980;
-
-    const colunaCheck = 170;
-
-    const colunaData = 480;
-
-    const colunaCasa = 330;
-
-    const alturaCabecalho = 90;
-
-    const alturaLinha = 105;
-
-
-
-    ctx.strokeStyle =
-        "#555";
-
-
-    ctx.lineWidth = 2;
-
-
-
-    /* =================================================
-       LINHAS VERTICAIS
-    ================================================= */
-
-    ctx.beginPath();
-
-
-    ctx.moveTo(
-
-        tabelaX +
-        colunaCheck,
-
-        tabelaY
-
-    );
-
-
-    ctx.lineTo(
-
-        tabelaX +
-        colunaCheck,
-
-        tabelaY +
-        alturaCabecalho +
-        alturaLinha * 6
-
-    );
-
-
-    ctx.moveTo(
-
-        tabelaX +
-        colunaCheck +
-        colunaData,
-
-        tabelaY
-
-    );
-
-
-    ctx.lineTo(
-
-        tabelaX +
-        colunaCheck +
-        colunaData,
-
-        tabelaY +
-        alturaCabecalho +
-        alturaLinha * 6
-
-    );
-
-
-    ctx.stroke();
-
-
-
-    /* =================================================
-       LINHAS HORIZONTAIS
-    ================================================= */
-
-    for (
-
-        let i = 0;
-
-        i <= 6;
-
-        i++
-
-    ) {
-
-
-        const y =
-
-            tabelaY +
-            alturaCabecalho +
-            i *
-            alturaLinha;
-
-
-        ctx.beginPath();
-
-
-        ctx.moveTo(
-
-            tabelaX,
-            y
-
-        );
-
-
-        ctx.lineTo(
-
-            tabelaX +
-            tabelaW,
-            y
-
-        );
-
-
-        ctx.stroke();
-
-    }
-
-
-
-    /* =================================================
-       CABEÇALHO DA TABELA
-    ================================================= */
-
-    ctx.fillStyle =
-        "#18233a";
-
-
-    textoCentral(
-
-        ctx,
-        "CHECK",
-
-        tabelaX +
-        colunaCheck / 2,
-
-        tabelaY + 55,
-
-        25,
-
-        "bold"
-
-    );
-
-
-    textoCentral(
-
-        ctx,
-        "INTERVALO DE DATA",
-
-        tabelaX +
-        colunaCheck +
-        colunaData / 2,
-
-        tabelaY + 55,
-
-        25,
-
-        "bold"
-
-    );
-
-
-    textoCentral(
-
-        ctx,
-        "UNIDADE RESPONSÁVEL",
-
-        tabelaX +
-        colunaCheck +
-        colunaData +
-        colunaCasa / 2,
-
-        tabelaY + 55,
-
-        24,
-
-        "bold"
-
-    );
-
-
-
-    /* =================================================
-       LINHAS DAS CASAS
-    ================================================= */
-
-    casas.forEach(
-
-        (item,index) => {
-
-
-        const y =
-
-            tabelaY +
-            alturaCabecalho +
-            index *
-            alturaLinha +
-            alturaLinha / 2;
-
-
-        const inicio =
-
-            document.getElementById(
-                "inicio" + index
-            ).value;
-
-
-        const fim =
-
-            document.getElementById(
-                "fim" + index
-            ).value;
-
-
-        const marcado =
-
-            document.getElementById(
-                "check" + index
-            ).checked;
-
-
-
-        /* CHECK */
-
-        desenharCheck(
-
-            ctx,
-
-            tabelaX +
-            colunaCheck / 2,
-
-            y,
-
-            marcado
-
-        );
-
-
-
-        /* DATA */
-
-        ctx.fillStyle =
-            "#111";
-
-
-        textoCentral(
-
-            ctx,
-
-            `${inicio}  a  ${fim}`,
-
-            tabelaX +
-            colunaCheck +
-            colunaData / 2,
-
-            y,
-
-            35
-
-        );
-
-
-
-        /* CASA */
-
-        textoCentral(
-
-            ctx,
-
-            item.casa,
-
-            tabelaX +
-            colunaCheck +
-            colunaData +
-            colunaCasa / 2,
-
-            y,
-
-            35
-
-        );
-
-    });
-
-
-
-    /* =================================================
-       RODAPÉ
-    ================================================= */
-
-    ctx.fillStyle =
-        "#a56b4d";
-
-
-    ctx.fillRect(
-
-        W / 2 - 100,
-
-        1375,
-
-        200,
-
-        5
-
-    );
-
-}
-
-
-
-/* =====================================================
-   SALVAR IMAGEM
-===================================================== */
-
-function salvarImagem() {
-
-
-    /*
-       Gera novamente para garantir
-       que tudo esteja atualizado.
-    */
-
-    gerarImagem();
-
-
-    const canvas =
-
-        document.getElementById(
-            "canvas"
-        );
-
-
-    /*
-       Converte para PNG.
-       A imagem continua em 1200 x 1600.
-    */
-
-    const imagemPNG =
-
-        canvas.toDataURL(
-            "image/png"
-        );
-
-
-    const link =
-        document.createElement("a");
-
-
-    link.download =
-        "Cronograma_Residencial_Maria_de_Lourdes.png";
-
-
-    link.href =
-        imagemPNG;
-
-
-    document.body.appendChild(link);
-
-
-    link.click();
-
-
-    document.body.removeChild(link);
-
-}
-
-
-
-/* =====================================================
-   DESMARCAR TODOS
-===================================================== */
-
-function limparChecks() {
-
-
-    for (
-
-        let i = 0;
-
-        i < casas.length;
-
-        i++
-
-    ) {
-
-
-        document.getElementById(
-
-            "check" + i
-
-        ).checked = false;
-
-    }
-
-
-    gerarImagem();
-
-}
-
-
-
-/* =====================================================
-   INICIALIZAÇÃO
-===================================================== */
-
-criarCampos();
-
-carregarLogo();
-
-
-</script>
-
-
+        function construirPainel() {
+            const container = document.getElementById('controles-container');
+            container.innerHTML = '';
+
+            dadosIniciais.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'linha-editor';
+                div.innerHTML = `
+                    <label><input type="checkbox" id="chk-${index}" ${item.check ? 'checked' : ''}> Check</label>
+                    <input type="date" id="dat-${index}" value="${item.data}">
+                    <input type="text" id="uni-${index}" value="${item.unidade}" style="width: 80px;">
+                `;
+                container.appendChild(div);
+
+                setTimeout(() => {
+                    document.getElementById(`chk-${index}`).addEventListener('change', (e) => {
+                        dadosIniciais[index].check = e.target.checked;
+                        atualizarTabela();
+                    });
+                    document.getElementById(`dat-${index}`).addEventListener('input', (e) => {
+                        dadosIniciais[index].data = e.target.value;
+                        atualizarTabela();
+                    });
+                    document.getElementById(`uni-${index}`).addEventListener('input', (e) => {
+                        dadosIniciais[index].unidade = e.target.value;
+                        atualizarTabela();
+                    });
+                }, 0);
+            });
+        }
+
+        // Eventos do Painel
+        const overlay = document.getElementById('painelOverlay');
+        
+        document.getElementById('btn-toggle-painel').addEventListener('click', () => {
+            overlay.classList.add('ativo');
+        });
+
+        document.getElementById('btn-fechar-painel').addEventListener('click', () => {
+            overlay.classList.remove('ativo');
+        });
+
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) {
+                overlay.classList.remove('ativo');
+            }
+        });
+
+        // Evento de Salvar Imagem
+        document.getElementById('btn-salvar-imagem').addEventListener('click', () => {
+            overlay.classList.remove('ativo');
+            const acoes = document.querySelector('.acoes-topo');
+            acoes.style.display = 'none';
+
+            html2canvas(document.getElementById('area-impressao'), { 
+                scale: 2,
+                useCORS: true,
+                backgroundColor: null 
+            }).then(canvas => {
+                acoes.style.display = 'flex';
+                const link = document.createElement('a');
+                link.download = 'cronograma-limpeza.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+        });
+
+        construirPainel();
+        atualizarTabela();
+    </script>
 </body>
-
 </html>
