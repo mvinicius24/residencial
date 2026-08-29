@@ -1,0 +1,1562 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>
+Cronograma - Residencial Maria de Lourdes
+</title>
+
+
+<style>
+
+/* =====================================================
+   CONFIGURAÇÕES GERAIS
+===================================================== */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+
+    margin: 0;
+
+    padding: 20px;
+
+    background: #eef0f2;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    color: #18233a;
+
+}
+
+
+.container {
+
+    width: 100%;
+
+    max-width: 850px;
+
+    margin: auto;
+
+}
+
+
+/* =====================================================
+   PAINEL DE CONFIGURAÇÃO
+===================================================== */
+
+.config {
+
+    background: white;
+
+    padding: 22px;
+
+    border-radius: 16px;
+
+    box-shadow:
+        0 4px 20px rgba(0,0,0,.12);
+
+    margin-bottom: 25px;
+
+}
+
+
+h1 {
+
+    text-align: center;
+
+    font-size: 24px;
+
+    margin-top: 0;
+
+}
+
+
+h2 {
+
+    font-size: 18px;
+
+    margin-top: 25px;
+
+}
+
+
+.secao {
+
+    border-top: 1px solid #ddd;
+
+    padding-top: 15px;
+
+    margin-top: 15px;
+
+}
+
+
+/* =====================================================
+   LOGO
+===================================================== */
+
+.logo-info {
+
+    background: #f7f8f9;
+
+    border: 1px solid #ddd;
+
+    border-radius: 10px;
+
+    padding: 15px;
+
+    text-align: center;
+
+}
+
+
+.logo-info strong {
+
+    display: block;
+
+    margin-bottom: 5px;
+
+}
+
+
+.logo-preview {
+
+    max-width: 260px;
+
+    max-height: 130px;
+
+    object-fit: contain;
+
+    margin-top: 10px;
+
+}
+
+
+/* =====================================================
+   CONTROLE DA LOGO
+===================================================== */
+
+.controle-logo {
+
+    display: grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap: 10px;
+
+    margin-top: 15px;
+
+}
+
+
+.controle-logo label {
+
+    display: block;
+
+    text-align: left;
+
+    font-size: 13px;
+
+    font-weight: bold;
+
+}
+
+
+.controle-logo input {
+
+    width: 100%;
+
+    margin-top: 5px;
+
+    padding: 9px;
+
+    border: 1px solid #bbb;
+
+    border-radius: 7px;
+
+}
+
+
+/* =====================================================
+   LINHAS DAS CASAS
+===================================================== */
+
+.linha {
+
+    display: grid;
+
+    grid-template-columns:
+        90px
+        1fr
+        1fr
+        70px;
+
+    gap: 8px;
+
+    align-items: center;
+
+    margin-bottom: 10px;
+
+}
+
+
+.linha strong {
+
+    font-size: 15px;
+
+}
+
+
+.linha input[type="text"] {
+
+    width: 100%;
+
+    padding: 10px;
+
+    border: 1px solid #bbb;
+
+    border-radius: 8px;
+
+    font-size: 15px;
+
+}
+
+
+.check {
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+}
+
+
+.check input {
+
+    width: 22px;
+
+    height: 22px;
+
+    cursor: pointer;
+
+}
+
+
+/* =====================================================
+   BOTÕES
+===================================================== */
+
+button {
+
+    width: 100%;
+
+    padding: 15px;
+
+    border: none;
+
+    border-radius: 10px;
+
+    margin-top: 10px;
+
+    font-size: 16px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+}
+
+
+.btn-gerar {
+
+    background: #18233a;
+
+    color: white;
+
+}
+
+
+.btn-salvar {
+
+    background: #56785d;
+
+    color: white;
+
+}
+
+
+.btn-limpar {
+
+    background: #e4e6e9;
+
+    color: #18233a;
+
+}
+
+
+/* =====================================================
+   PREVISUALIZAÇÃO
+===================================================== */
+
+.preview {
+
+    display: flex;
+
+    justify-content: center;
+
+}
+
+
+canvas {
+
+    width: 100%;
+
+    max-width: 600px;
+
+    height: auto;
+
+    background: white;
+
+    box-shadow:
+        0 8px 30px rgba(0,0,0,.20);
+
+}
+
+
+/* =====================================================
+   CELULAR
+===================================================== */
+
+@media(max-width:650px) {
+
+    body {
+
+        padding: 10px;
+
+    }
+
+
+    .config {
+
+        padding: 15px;
+
+    }
+
+
+    .linha {
+
+        grid-template-columns:
+            70px
+            1fr
+            1fr
+            55px;
+
+        gap: 5px;
+
+    }
+
+
+    .controle-logo {
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+
+<!-- =====================================================
+     PAINEL
+===================================================== -->
+
+<div class="config">
+
+
+<h1>
+🧹 Residencial Maria de Lourdes
+</h1>
+
+
+<p style="text-align:center;">
+
+Gerador do Cronograma de Limpeza
+
+</p>
+
+
+
+<!-- =====================================================
+     LOGO
+===================================================== -->
+
+<div class="secao">
+
+
+<h2>
+🖼️ Logo
+</h2>
+
+
+<div class="logo-info">
+
+
+<strong>
+Logo carregada automaticamente:
+</strong>
+
+
+<span>
+logo.png
+</span>
+
+
+<br>
+
+
+<img
+    id="previewLogo"
+    class="logo-preview"
+    alt="Logo do Residencial">
+
+
+<div class="controle-logo">
+
+
+<div>
+
+<label>
+Largura da logo
+</label>
+
+
+<input
+    type="number"
+    id="logoLargura"
+    value="260"
+    min="50"
+    max="700"
+    onchange="gerarImagem()">
+
+
+</div>
+
+
+<div>
+
+<label>
+Altura máxima
+</label>
+
+
+<input
+    type="number"
+    id="logoAltura"
+    value="150"
+    min="50"
+    max="400"
+    onchange="gerarImagem()">
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+</div>
+
+
+
+<!-- =====================================================
+     CASAS
+===================================================== -->
+
+<div class="secao">
+
+
+<h2>
+📋 Datas e Checks
+</h2>
+
+
+<div id="linhas"></div>
+
+
+</div>
+
+
+
+<!-- =====================================================
+     BOTÕES
+===================================================== -->
+
+<button
+    class="btn-gerar"
+    onclick="gerarImagem()">
+
+🔄 ATUALIZAR IMAGEM
+
+</button>
+
+
+<button
+    class="btn-salvar"
+    onclick="salvarImagem()">
+
+💾 SALVAR IMAGEM PNG
+
+</button>
+
+
+<button
+    class="btn-limpar"
+    onclick="limparChecks()">
+
+☐ DESMARCAR TODOS
+
+</button>
+
+
+</div>
+
+
+
+<!-- =====================================================
+     PREVIEW
+===================================================== -->
+
+<div class="preview">
+
+
+<canvas
+    id="canvas"
+    width="1200"
+    height="1600">
+</canvas>
+
+
+</div>
+
+
+</div>
+
+
+
+<script>
+
+
+/* =====================================================
+   CONFIGURAÇÃO DA LOGO
+
+   A logo precisa estar na mesma pasta do index.html
+===================================================== */
+
+const URL_LOGO = "logo.png";
+
+
+/* =====================================================
+   CASAS
+
+   true  = check marcado
+   false = check desmarcado
+===================================================== */
+
+const casas = [
+
+    {
+        casa: "Casa 06",
+        inicio: "31/08",
+        fim: "04/09",
+        check: true
+    },
+
+    {
+        casa: "Casa 01",
+        inicio: "12/09",
+        fim: "18/09",
+        check: true
+    },
+
+    {
+        casa: "Casa 02",
+        inicio: "28/09",
+        fim: "02/10",
+        check: true
+    },
+
+    {
+        casa: "Casa 03",
+        inicio: "12/10",
+        fim: "16/10",
+        check: true
+    },
+
+    {
+        casa: "Casa 04",
+        inicio: "26/10",
+        fim: "30/10",
+        check: true
+    },
+
+    {
+        casa: "Casa 05",
+        inicio: "09/11",
+        fim: "13/11",
+        check: false
+    }
+
+];
+
+
+
+/* =====================================================
+   VARIÁVEL DA LOGO
+===================================================== */
+
+let logoSelecionada = null;
+
+
+
+/* =====================================================
+   CARREGAR LOGO
+===================================================== */
+
+function carregarLogo() {
+
+    logoSelecionada = new Image();
+
+    /*
+       Isso permite que o navegador tente carregar
+       a imagem corretamente.
+    */
+
+    logoSelecionada.crossOrigin = "anonymous";
+
+
+    logoSelecionada.onload = function() {
+
+        document.getElementById(
+            "previewLogo"
+        ).src = URL_LOGO;
+
+
+        gerarImagem();
+
+    };
+
+
+    logoSelecionada.onerror = function() {
+
+        console.log(
+            "Não foi possível carregar logo.png"
+        );
+
+
+        gerarImagem();
+
+    };
+
+
+    logoSelecionada.src = URL_LOGO;
+
+}
+
+
+
+/* =====================================================
+   CRIAR CAMPOS DAS CASAS
+===================================================== */
+
+function criarCampos() {
+
+    const div =
+        document.getElementById("linhas");
+
+
+    div.innerHTML = "";
+
+
+    casas.forEach(
+        (item,index) => {
+
+
+        const linha =
+            document.createElement("div");
+
+
+        linha.className =
+            "linha";
+
+
+        linha.innerHTML = `
+
+            <strong>
+                ${item.casa}
+            </strong>
+
+
+            <input
+                type="text"
+                id="inicio${index}"
+                value="${item.inicio}"
+                placeholder="31/08">
+
+
+            <input
+                type="text"
+                id="fim${index}"
+                value="${item.fim}"
+                placeholder="04/09">
+
+
+            <div class="check">
+
+                <input
+                    type="checkbox"
+                    id="check${index}"
+                    ${item.check ? "checked" : ""}>
+
+            </div>
+
+        `;
+
+
+        div.appendChild(linha);
+
+    });
+
+}
+
+
+
+/* =====================================================
+   TEXTO CENTRALIZADO
+===================================================== */
+
+function textoCentral(
+
+    ctx,
+    texto,
+    x,
+    y,
+    tamanho,
+    peso = "normal"
+
+) {
+
+    ctx.font =
+        `${peso} ${tamanho}px Arial`;
+
+
+    ctx.textAlign =
+        "center";
+
+
+    ctx.textBaseline =
+        "middle";
+
+
+    ctx.fillText(
+        texto,
+        x,
+        y
+    );
+
+}
+
+
+
+/* =====================================================
+   DESENHAR LOGO
+===================================================== */
+
+function desenharLogo(
+
+    ctx,
+    imagem,
+    centroX,
+    centroY
+
+) {
+
+    if (
+        !imagem ||
+        !imagem.complete ||
+        imagem.naturalWidth === 0
+    ) {
+
+        return;
+
+    }
+
+
+    let largura = parseInt(
+
+        document.getElementById(
+            "logoLargura"
+        ).value
+
+    );
+
+
+    let alturaMax = parseInt(
+
+        document.getElementById(
+            "logoAltura"
+        ).value
+
+    );
+
+
+    if (!largura) {
+
+        largura = 260;
+
+    }
+
+
+    if (!alturaMax) {
+
+        alturaMax = 150;
+
+    }
+
+
+    /*
+       Mantém a proporção original
+    */
+
+    const proporcao =
+        imagem.naturalWidth /
+        imagem.naturalHeight;
+
+
+    let altura =
+        largura /
+        proporcao;
+
+
+    if (altura > alturaMax) {
+
+        altura = alturaMax;
+
+
+        largura =
+            altura *
+            proporcao;
+
+    }
+
+
+    ctx.drawImage(
+
+        imagem,
+
+        centroX - largura / 2,
+
+        centroY - altura / 2,
+
+        largura,
+
+        altura
+
+    );
+
+}
+
+
+
+/* =====================================================
+   DESENHAR CHECK
+===================================================== */
+
+function desenharCheck(
+
+    ctx,
+    x,
+    y,
+    marcado
+
+) {
+
+    const tamanho = 52;
+
+
+    ctx.strokeStyle =
+        "#1b2942";
+
+
+    ctx.lineWidth = 4;
+
+
+    /*
+       Quadrado
+    */
+
+    ctx.strokeRect(
+
+        x - tamanho / 2,
+
+        y - tamanho / 2,
+
+        tamanho,
+
+        tamanho
+
+    );
+
+
+    /*
+       Check
+    */
+
+    if (marcado) {
+
+        ctx.lineWidth = 7;
+
+
+        ctx.beginPath();
+
+
+        ctx.moveTo(
+
+            x - 20,
+            y
+
+        );
+
+
+        ctx.lineTo(
+
+            x - 5,
+            y + 16
+
+        );
+
+
+        ctx.lineTo(
+
+            x + 25,
+            y - 22
+
+        );
+
+
+        ctx.stroke();
+
+    }
+
+}
+
+
+
+/* =====================================================
+   GERAR IMAGEM
+===================================================== */
+
+function gerarImagem() {
+
+
+    const canvas =
+        document.getElementById(
+            "canvas"
+        );
+
+
+    const ctx =
+        canvas.getContext("2d");
+
+
+    const W =
+        canvas.width;
+
+
+    const H =
+        canvas.height;
+
+
+
+    /* =================================================
+       FUNDO
+    ================================================= */
+
+    ctx.fillStyle =
+        "#ffffff";
+
+
+    ctx.fillRect(
+
+        0,
+        0,
+        W,
+        H
+
+    );
+
+
+
+    /* =================================================
+       BORDA EXTERNA
+    ================================================= */
+
+    ctx.strokeStyle =
+        "#18233a";
+
+
+    ctx.lineWidth = 4;
+
+
+    ctx.strokeRect(
+
+        70,
+        70,
+        W - 140,
+        H - 140
+
+    );
+
+
+
+    /* =================================================
+       CABEÇALHO
+    ================================================= */
+
+    ctx.fillStyle =
+        "#a56b4d";
+
+
+    textoCentral(
+
+        ctx,
+        "RESIDENCIAL",
+        W / 2,
+        125,
+        32,
+        "bold"
+
+    );
+
+
+    ctx.fillStyle =
+        "#18233a";
+
+
+    textoCentral(
+
+        ctx,
+        "MARIA DE LOURDES",
+        W / 2,
+        175,
+        50
+
+    );
+
+
+
+    /* =================================================
+       LOGO
+    ================================================= */
+
+    desenharLogo(
+
+        ctx,
+        logoSelecionada,
+        W / 2,
+        280
+
+    );
+
+
+
+    /* =================================================
+       TÍTULO
+    ================================================= */
+
+    ctx.fillStyle =
+        "#18233a";
+
+
+    textoCentral(
+
+        ctx,
+        "CRONOGRAMA DE LIMPEZA",
+        W / 2,
+        405,
+        34
+
+    );
+
+
+    textoCentral(
+
+        ctx,
+        "QUARTO DO LIXO",
+        W / 2,
+        450,
+        34
+
+    );
+
+
+
+    /* =================================================
+       CONFIGURAÇÃO DA TABELA
+    ================================================= */
+
+    const tabelaX = 110;
+
+    const tabelaY = 510;
+
+    const tabelaW = 980;
+
+    const colunaCheck = 170;
+
+    const colunaData = 480;
+
+    const colunaCasa = 330;
+
+    const alturaCabecalho = 90;
+
+    const alturaLinha = 105;
+
+
+
+    ctx.strokeStyle =
+        "#555";
+
+
+    ctx.lineWidth = 2;
+
+
+
+    /* =================================================
+       LINHAS VERTICAIS
+    ================================================= */
+
+    ctx.beginPath();
+
+
+    ctx.moveTo(
+
+        tabelaX +
+        colunaCheck,
+
+        tabelaY
+
+    );
+
+
+    ctx.lineTo(
+
+        tabelaX +
+        colunaCheck,
+
+        tabelaY +
+        alturaCabecalho +
+        alturaLinha * 6
+
+    );
+
+
+    ctx.moveTo(
+
+        tabelaX +
+        colunaCheck +
+        colunaData,
+
+        tabelaY
+
+    );
+
+
+    ctx.lineTo(
+
+        tabelaX +
+        colunaCheck +
+        colunaData,
+
+        tabelaY +
+        alturaCabecalho +
+        alturaLinha * 6
+
+    );
+
+
+    ctx.stroke();
+
+
+
+    /* =================================================
+       LINHAS HORIZONTAIS
+    ================================================= */
+
+    for (
+
+        let i = 0;
+
+        i <= 6;
+
+        i++
+
+    ) {
+
+
+        const y =
+
+            tabelaY +
+            alturaCabecalho +
+            i *
+            alturaLinha;
+
+
+        ctx.beginPath();
+
+
+        ctx.moveTo(
+
+            tabelaX,
+            y
+
+        );
+
+
+        ctx.lineTo(
+
+            tabelaX +
+            tabelaW,
+            y
+
+        );
+
+
+        ctx.stroke();
+
+    }
+
+
+
+    /* =================================================
+       CABEÇALHO DA TABELA
+    ================================================= */
+
+    ctx.fillStyle =
+        "#18233a";
+
+
+    textoCentral(
+
+        ctx,
+        "CHECK",
+
+        tabelaX +
+        colunaCheck / 2,
+
+        tabelaY + 55,
+
+        25,
+
+        "bold"
+
+    );
+
+
+    textoCentral(
+
+        ctx,
+        "INTERVALO DE DATA",
+
+        tabelaX +
+        colunaCheck +
+        colunaData / 2,
+
+        tabelaY + 55,
+
+        25,
+
+        "bold"
+
+    );
+
+
+    textoCentral(
+
+        ctx,
+        "UNIDADE RESPONSÁVEL",
+
+        tabelaX +
+        colunaCheck +
+        colunaData +
+        colunaCasa / 2,
+
+        tabelaY + 55,
+
+        24,
+
+        "bold"
+
+    );
+
+
+
+    /* =================================================
+       LINHAS DAS CASAS
+    ================================================= */
+
+    casas.forEach(
+
+        (item,index) => {
+
+
+        const y =
+
+            tabelaY +
+            alturaCabecalho +
+            index *
+            alturaLinha +
+            alturaLinha / 2;
+
+
+        const inicio =
+
+            document.getElementById(
+                "inicio" + index
+            ).value;
+
+
+        const fim =
+
+            document.getElementById(
+                "fim" + index
+            ).value;
+
+
+        const marcado =
+
+            document.getElementById(
+                "check" + index
+            ).checked;
+
+
+
+        /* CHECK */
+
+        desenharCheck(
+
+            ctx,
+
+            tabelaX +
+            colunaCheck / 2,
+
+            y,
+
+            marcado
+
+        );
+
+
+
+        /* DATA */
+
+        ctx.fillStyle =
+            "#111";
+
+
+        textoCentral(
+
+            ctx,
+
+            `${inicio}  a  ${fim}`,
+
+            tabelaX +
+            colunaCheck +
+            colunaData / 2,
+
+            y,
+
+            35
+
+        );
+
+
+
+        /* CASA */
+
+        textoCentral(
+
+            ctx,
+
+            item.casa,
+
+            tabelaX +
+            colunaCheck +
+            colunaData +
+            colunaCasa / 2,
+
+            y,
+
+            35
+
+        );
+
+    });
+
+
+
+    /* =================================================
+       RODAPÉ
+    ================================================= */
+
+    ctx.fillStyle =
+        "#a56b4d";
+
+
+    ctx.fillRect(
+
+        W / 2 - 100,
+
+        1375,
+
+        200,
+
+        5
+
+    );
+
+}
+
+
+
+/* =====================================================
+   SALVAR IMAGEM
+===================================================== */
+
+function salvarImagem() {
+
+
+    /*
+       Gera novamente para garantir
+       que tudo esteja atualizado.
+    */
+
+    gerarImagem();
+
+
+    const canvas =
+
+        document.getElementById(
+            "canvas"
+        );
+
+
+    /*
+       Converte para PNG.
+       A imagem continua em 1200 x 1600.
+    */
+
+    const imagemPNG =
+
+        canvas.toDataURL(
+            "image/png"
+        );
+
+
+    const link =
+        document.createElement("a");
+
+
+    link.download =
+        "Cronograma_Residencial_Maria_de_Lourdes.png";
+
+
+    link.href =
+        imagemPNG;
+
+
+    document.body.appendChild(link);
+
+
+    link.click();
+
+
+    document.body.removeChild(link);
+
+}
+
+
+
+/* =====================================================
+   DESMARCAR TODOS
+===================================================== */
+
+function limparChecks() {
+
+
+    for (
+
+        let i = 0;
+
+        i < casas.length;
+
+        i++
+
+    ) {
+
+
+        document.getElementById(
+
+            "check" + i
+
+        ).checked = false;
+
+    }
+
+
+    gerarImagem();
+
+}
+
+
+
+/* =====================================================
+   INICIALIZAÇÃO
+===================================================== */
+
+criarCampos();
+
+carregarLogo();
+
+
+</script>
+
+
+</body>
+
+</html>
