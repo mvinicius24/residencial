@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Residencial Maria de Lourdes - Projeção Financeira</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#eef3f7;font-family:Arial,Helvetica,sans-serif;color:#18314f}
+.container{max-width:1200px;margin:auto;padding:14px}
+.panel{background:#fff;border-radius:18px;padding:18px;box-shadow:0 5px 20px #0001}
+.toolbar{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-bottom:12px}
+button{border:0;border-radius:9px;padding:10px 15px;font-weight:bold;cursor:pointer}
+.primary{background:#087f68;color:white}.secondary{background:#e7eff5;color:#123d68}
+.settings{display:none;background:#f5f9fc;border:1px solid #d5e1ea;border-radius:12px;padding:15px;margin-bottom:14px}
+.settings.open{display:block}
+.form{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+label{font-weight:bold;font-size:13px}input{width:100%;margin-top:5px;padding:9px;border:1px solid #bdcedb;border-radius:7px}
+.expenses{margin-top:12px}.expense{display:grid;grid-template-columns:1fr 130px 35px;gap:7px;margin:6px 0}
+.remove{background:#ffe1e1;color:#b00000;padding:5px}
+.canvas-wrap{overflow:auto}
+#dashboard{display:block;width:1160px;height:auto;background:white;border-radius:16px}
+.hint{font-size:12px;color:#65788c;text-align:center;margin-top:8px}
+@media(max-width:700px){.form{grid-template-columns:1fr}.expense{grid-template-columns:1fr 110px 35px}}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="panel">
+  <div class="toolbar">
+    <button class="secondary" onclick="toggleSettings()">⚙️ Configurar</button>
+    <button class="primary" onclick="render()">🔄 Atualizar</button>
+    <button class="primary" onclick="downloadPNG()">🖼️ GERAR IMAGEM PNG</button>
+  </div>
+
+  <div id="settings" class="settings">
+    <div class="form">
+      <div><label>Saldo atual em caixa</label><input id="balance" type="number" step="0.01"></div>
+      <div><label>Receita mensal</label><input id="income" type="number" step="0.01"></div>
+      <div><label>Nome do residencial</label><input id="condo" type="text"></div>
+    </div>
+    <div class="expenses">
+      <b>Despesas fixas mensais</b>
+      <div id="expenseList"></div>
+      <button class="secondary" onclick="addExpense()">+ Adicionar despesa</button>
+    </div>
+  </div>
+
+  <div class="canvas-wrap">
+    <svg id="dashboard" viewBox="0 0 1160 850" xmlns="http://www.w3.org/2000/svg"></svg>
+  </div>
+  <div class="hint">A imagem PNG é criada com os valores atuais e pode ser enviada pelo WhatsApp.</div>
+</div>
+</div>
+
+<script>
+const STORAGE='rml_dashboard_v2';
+const defaults={
+  balance:135.40,
+  income:900,
+  condo:'RESIDENCIAL MARIA DE LOURDES',
+  expenses:[
+    {name:'COSERN (média)',value:200,category:'Serviços'},
+    {name:'CAERN (média)',value:150,category:'Serviços'}
+  ]
+};
+let data=JSON.parse(localStorage.getItem(STORAGE)||'null')||defaults;
+
+function money(v){
+ return new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(Number(v)||0);
+}
+function esc(s){
+ return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&apos;'}[c]));
+}
+function months(){
+ const d=new Date();
+ return [0,1,2].map(i=>new Date(d.getFullYear(),d.getMonth()+i,1));
+}
+function monthLabel(d){
+ return d.toLocaleDateString('pt-BR',{month:'long',year:'numeric'}).toUpperCase();
+}
+function totalExpenses(){
+ return data.expenses.reduce((a,e)=>a+Number(e.value||0),0);
+}
+function toggleSettings(){
+ document.getElementById('settings').classList.toggle('open');
+}
+function addExpense(){
+ data.expenses.push({name:'Nova despesa',value:0,category:'Serviços'});
+ renderInputs();
+}
+function removeExpense(i){
+ data.expenses.splice(i,1);
+ renderInputs();
+ render();
+}
+function renderInputs(){
+ document.getElementById('balance').value=data.balance;
+ document.getElementById('income').value=data.income;
+ document.getElementById('condo').value=data.condo;
+ document.getElementById('expenseList').innerHTML=data.expenses.map((e,i)=>`
+ <div class="expense">
+   <input value="${esc(e.name)}" onchange="data.expenses[${i}].name=this.value">
+   <input type="number" step="0.01" value="${Number(e.value).toFixed(2)}" onchange="data.expenses[${i}].value=Number(this.value)">
+   <button class="remove" onclick="removeExpense(${i})">×</button>
+ </div>`).join('');
+}
+function save(){
+ data.balance=Number(document.getElementById('balance').value)||0;
+ data.income=Number(document.getElementById('income').value)||0;
+ data.condo=document.getElementById('condo').value||defaults.condo;
+ localStorage.setItem(STORAGE,JSON.stringify(data));
+}
+function svgText(x,y,text,size,weight='400',fill='#18314f',anchor='start'){
+ return `<text x="${x}" y="${y}" font-family="Arial,Helvetica,sans-serif" font-size="${size}" font-weight="${weight}" fill="${fill}" text-anchor="${anchor}">${esc(text)}</text>`;
+}
+function rect(x,y,w,h,fill='#fff',stroke='#d9e3eb',r=12){
+ return `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${r}" fill="${fill}" stroke="${stroke}"/>`;
+}
+function render(){
+ save(); renderInputs();
+ const svg=document.getElementById('dashboard');
+ const ms=months(), gastos=totalExpenses(), result=Number(data.income)-gastos;
+ let saldo=data.balance;
+ let out='';
+ out+=`<rect width="1160" height="850" rx="18" fill="#fff"/>`;
+
+ // Header
+ out+=svgText(45,38,'RESIDENCIAL',14,'800','#c84b18','start');
+ out+=svgText(45,67,'MARIA DE LOURDES',23,'700','#092e67','start');
+ out+=svgText(44,110,'⌂⌂⌂',54,'400','#092e67','start');
+ out+=`<line x1="285" y1="22" x2="285" y2="125" stroke="#8ba4ba" stroke-width="2"/>`;
+ out+=svgText(580,50,'PROJEÇÃO DE RECEITAS E GASTOS',34,'800','#102c36','middle');
+ out+=svgText(580,78,'Planejamento para os próximos meses',19,'400','#536a87','middle');
+ out+=rect(890,22,235,86,'#fff','#d9e3eb',12);
+ out+=svgText(1007,48,'💼  SALDO ATUAL EM CAIXA',14,'400','#18314f','middle');
+ out+=svgText(1007,84,money(data.balance),27,'800','#087f68','middle');
+
+ // Grid
+ const left=18, top=140, labelW=255, gap=10, monthW=279;
+ const xs=[left+labelW+gap, left+labelW+gap+monthW+gap, left+labelW+gap+monthW*2+gap*2];
+ out+=rect(left,top,labelW,438,'#fff','#d9e3eb',14);
+ out+=`<rect x="${left}" y="${top}" width="${labelW}" height="54" rx="14" fill="#064653"/>`;
+ out+=svgText(left+labelW/2,top+34,'RESUMO FINANCEIRO',19,'800','#fff','middle');
+
+ const rows=[
+  ['📈','RECEITAS','(Entradas)','#087f68'],
+  ['⬇️','GASTOS','(Saídas)','#d71920'],
+  ['⚖️','RESULTADO','(Receitas - Gastos)','#0d4fb5'],
+  ['💼','SALDO PROJETADO','(Acumulado)','#123e72']
+ ];
+ rows.forEach((r,i)=>{
+   const y=top+54+i*96;
+   if(i>0) out+=`<line x1="${left}" y1="${y}" x2="${left+labelW}" y2="${y}" stroke="#d9e3eb"/>`;
+   out+=`<circle cx="${left+43}" cy="${y+48}" r="27" fill="${i===1?'#ffe2e3':i>=2?'#e6efff':'#e1f4eb'}"/>`;
+   out+=svgText(left+43,y+57,r[0],25,'400',r[3],'middle');
+   out+=svgText(left+82,y+43,r[1],17,'800',r[3]);
+   out+=svgText(left+82,y+64,r[2],13,'400','#536a87');
+ });
+
+ ms.forEach((m,i)=>{
+   const x=xs[i];
+   const actual=i===0;
+   saldo+=result;
+   out+=rect(x,top,monthW,438,'#fff','#d9e3eb',14);
+   out+=`<rect x="${x}" y="${top}" width="${monthW}" height="54" rx="14" fill="${actual?'#0d4aa0':'#087f68'}"/>`;
+   out+=svgText(x+monthW/2,top+31,monthLabel(m),18,'800','#fff','middle');
+   out+=svgText(x+monthW/2,top+48,actual?'(MÊS CORRENTE)':'(PROJEÇÃO)',12,'400','#fff','middle');
+
+   out+=svgText(x+monthW/2,top+91,money(data.income),21,'800','#087f68','middle');
+   out+=svgText(x+monthW/2,top+112,'(Taxas das casas)',13,'400','#18314f','middle');
+   out+=svgText(x+monthW/2,top+151,money(gastos),21,'800','#d71920','middle');
+
+   let ey=top+178;
+   data.expenses.forEach(e=>{
+     out+=svgText(x+13,ey,'• '+e.name,12,'400','#18314f');
+     out+=svgText(x+monthW-13,ey,money(e.value),12,'400','#18314f','end');
+     ey+=19;
+   });
+   out+=svgText(x+monthW/2,top+284,money(result),22,'800','#0d4fb5','middle');
+   out+=svgText(x+monthW/2,top+305,'(Receitas - Gastos)',13,'400','#18314f','middle');
+   out+=svgText(x+monthW/2,top+369,money(saldo),21,'800','#123e72','middle');
+   out+=svgText(x+monthW/2,top+390,'(Saldo acumulado)',13,'400','#18314f','middle');
+ });
+
+ // Details
+ const detailY=592, introW=255;
+ out+=rect(left,detailY,introW,170,'#f8fbfd','#d9e3eb',14);
+ out+=svgText(left+22,detailY+42,'📋  DETALHAMENTO',17,'800','#08705d');
+ out+=svgText(left+22,detailY+65,'DE GASTOS',17,'800','#08705d');
+ out+=svgText(left+22,detailY+87,'(PROJEÇÃO)',14,'400','#08705d');
+ out+=`<line x1="${left+22}" y1="${detailY+106}" x2="${left+68}" y2="${detailY+106}" stroke="#08705d" stroke-width="3"/>`;
+ out+=svgText(left+22,detailY+133,'Valores estimados com base',13,'400','#536a87');
+ out+=svgText(left+22,detailY+153,'nas despesas fixas cadastradas.',13,'400','#536a87');
+
+ ms.forEach((m,i)=>{
+   const x=xs[i], y=detailY;
+   out+=rect(x,y,monthW,170,'#fff','#d9e3eb',12);
+   out+=`<rect x="${x}" y="${y}" width="${monthW}" height="36" rx="12" fill="#087f68"/>`;
+   out+=svgText(x+monthW/2,y+24,monthLabel(m),16,'800','#fff','middle');
+   out+=svgText(x+10,y+57,'Descrição',11,'800','#18314f');
+   out+=svgText(x+160,y+57,'Categoria',11,'800','#18314f','middle');
+   out+=svgText(x+269,y+57,'Valor Estimado',11,'800','#18314f','end');
+   data.expenses.forEach((e,j)=>{
+     const yy=y+82+j*24;
+     out+=`<line x1="${x+8}" y1="${yy+7}" x2="${x+monthW-8}" y2="${yy+7}" stroke="#e0e7ed"/>`;
+     out+=svgText(x+10,yy, e.name,10,'400','#18314f');
+     out+=svgText(x+160,yy,e.category||'Serviços',10,'400','#18314f','middle');
+     out+=svgText(x+269,yy,money(e.value),10,'400','#18314f','end');
+   });
+   out+=`<line x1="${x+8}" y1="${y+145}" x2="${x+monthW-8}" y2="${y+145}" stroke="#d9e3eb"/>`;
+   out+=svgText(x+10,y+163,'TOTAL ESTIMADO',11,'800','#111');
+   out+=svgText(x+monthW-10,y+163,money(gastos),12,'800','#d71920','end');
+ });
+
+ // Footer
+ out+=rect(18,777,1107,55,'#f1faf7','#77cdb9',13);
+ out+=svgText(43,811,'💡',26,'400','#08705d');
+ out+=svgText(80,802,'IMPORTANTE:',13,'800','#08705d');
+ out+=svgText(171,802,'Estas projeções são estimativas baseadas nas informações atuais e podem variar.',12,'400','#18314f');
+ out+=svgText(80,823,'Acompanhe os registros para manter o controle financeiro do condomínio.',12,'400','#18314f');
+
+ svg.innerHTML=out;
+}
+function downloadPNG(){
+ render();
+ const svg=document.getElementById('dashboard');
+ const xml=new XMLSerializer().serializeToString(svg);
+ const blob=new Blob([xml],{type:'image/svg+xml;charset=utf-8'});
+ const url=URL.createObjectURL(blob);
+ const img=new Image();
+ img.onload=()=>{
+   const scale=2;
+   const canvas=document.createElement('canvas');
+   canvas.width=1160*scale; canvas.height=850*scale;
+   const ctx=canvas.getContext('2d');
+   ctx.fillStyle='#fff'; ctx.fillRect(0,0,canvas.width,canvas.height);
+   ctx.drawImage(img,0,0,canvas.width,canvas.height);
+   URL.revokeObjectURL(url);
+   canvas.toBlob(b=>{
+     const a=document.createElement('a');
+     a.href=URL.createObjectURL(b);
+     const d=new Date();
+     a.download='projecao_financeira_'+String(d.getMonth()+1).padStart(2,'0')+'-'+d.getFullYear()+'.png';
+     a.click();
+     setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+   },'image/png');
+ };
+ img.src=url;
+}
+render();
+</script>
+</body>
+</html>
