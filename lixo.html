@@ -200,7 +200,7 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    padding-top: 14%; /* Mantém o topo travado proporcionalmente à imagem */
+    padding-top: 22%; /* Aumentado de 14% para 22% para empurrar o conteúdo para baixo */
     box-sizing: border-box;
 }
 
@@ -225,9 +225,9 @@ tr.concluido td { color: #00b074; }
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
     position: relative;
-    top: 6px;
+    top: 0; /* Zerado para evitar empurrar elementos de forma desalinhada */
 }
 
 .logo-img {
@@ -287,7 +287,7 @@ th {
 }
 
 td {
-    padding: 5px 1px;
+    padding: 7px 1px; /* Aumentado de 5px para 7px para expandir a altura da tabela */
     font-size: 10px;
     color: #16243e;
     text-align: center;
