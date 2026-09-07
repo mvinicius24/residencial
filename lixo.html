@@ -7,7 +7,7 @@
     <!-- HTML2Canvas para exportar imagem -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
-        /* Padroniza a fonte Arial para absolutamente todos os elementos do documento */
+        /* Padroniza a fonte Arial para todos os elementos */
         *, *::before, *::after, input, button, select, textarea {
             box-sizing: border-box;
             font-family: Arial, sans-serif !important;
@@ -45,111 +45,107 @@
             cursor: pointer;
             box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
             font-size: 18px;
+            text-decoration: none;
+            color: #333;
         }
 
         .btn-icone:hover {
             background: #f0f0f0;
         }
 
-        /* Moldura Metálica */
-        .moldura-quadro {
-            background-color: #bcbec0;
-            padding: 18px;
-            border-radius: 4px;
+        /* Container Principal ajustado para estilo MINIATURA */
+        .area-container {
+            position: relative;
+            width: 100%;
+            max-width: 360px; /* Tamanho compacto de miniatura na tela */
+            display: inline-block;
             box-shadow: 0 10px 25px rgba(0,0,0,0.25);
-            border: 2px solid #9ea0a3;
+            transition: width 0.2s ease;
         }
 
-        /* Folha Interna */
-        .folha-container {
-            background-color: #f7f7f5;
-            width: 360px;
-            padding: 25px 20px 25px 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        
-/* Container do Check verde do Iconpacks */
-.check-icon-container {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 22px;
-    height: 22px;
-}
-
-.img-check {
-    width: 22px;
-    height: 22px;
-    display: block;
-}
-
-/* Marcação verde no texto da linha concluída */
-tr.concluido td {
-    color: #00b074;
-}
-
-
-        /* Container da Logo ajustado */
-        .logo-container {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative; /* Permite mover a logo com precisão */
-    top: -30px;  /* Valore positivo move para BAIRRO, negativo para CIMA */
-    left: 0px; /* Valore positivo move para DIREITA, negativo para ESQUERDA */
-    margin-top: 5px;
-    margin-bottom: 15px;
-}
-        .logo-img {
-            max-width: 170px;
+        /* Imagem de Fundo (fundo.png) */
+        .bg-imagem {
+            width: 100%;
             height: auto;
             display: block;
         }
 
-       /* Linha Decorativa do Título (Estrutura global) */
-.titulo-box {
-    width: 100%;
-    border-top: 1px solid #16243e;
-    position: relative;
-    
-    /* Posição Exata do Conjunto (Linha + Texto) */
-    top: -30px;       /* Positivo desce o conjunto todo | Negativo sobe */
-    left: 0px;      /* Positivo move para a direita | Negativo move para a esquerda */
-    
-    margin-top: 5px;
-    margin-bottom: 25px; /* Espaço para a tabela não colar ao descer o título */
-    text-align: center;
-}
+        /* Camada Interna sobre a Imagem */
+        .conteudo-sobreposto {
+            position: absolute;
+            top: 10%;
+            left: 11%;
+            width: 78%;
+            height: 80%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
-/* Texto do Título */
-.titulo-texto {
-    background-color: #f7f7f5;
-    padding: 0 8px;
-    font-size: 16px;
-    font-weight: bold;
-    color: #16243e;
-    position: relative;
-    
-    /* Centralização Vertical sobre a Linha */
-    top: -50px;     /* Como a fonte aumentou para 16px, ajuste entre -10px e -12px para que a linha corte exatamente o meio do texto */
-    
-    display: inline-block;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    text-align: center;
-}
+        /* Container do Check verde */
+        .check-icon-container {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 18px;
+            height: 18px;
+        }
 
-        /* Tabela de Dados */
+        .img-check {
+            width: 18px;
+            height: 18px;
+            display: block;
+        }
+
+        /* Marcação verde na linha concluída */
+        tr.concluido td {
+            color: #00b074;
+        }
+
+        /* Container da Logo */
+        .logo-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 15px;
+            position: relative;
+            top: 15px;
+        }
+        .logo-img {
+            max-width: 130px;
+            height: auto;
+            display: block;
+        }
+
+        /* Linha Decorativa do Título */
+        .titulo-box {
+            width: 100%;
+            position: relative;
+            margin-top: 10px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        /* Texto do Título */
+        .titulo-texto {
+            padding: 0 4px;
+            font-size: 11px;
+            font-weight: bold;
+            color: #16243e;
+            position: relative;
+            top: -8px;
+            display: inline-block;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+            text-align: center;
+        }
+
+        /* Tabela de Dados Comprimida */
         .tabela-container {
-    width: 100%;
-    position: relative;
-    top: -30px;       /* Positivo desce a tabela | Negativo sobe */
-    left: 0px;      /* Positivo move para a direita | Negativo move para a esquerda */
-    margin-top: 10px; /* Distância em relação ao título */
-}
+            width: 88%;
+            margin: 0 auto;
+        }
 
         table {
             width: 100%;
@@ -157,18 +153,18 @@ tr.concluido td {
         }
 
         th {
-    font-size: 11px;
-    font-weight: bold;
-    color: #16243e;
-    padding-bottom: 8px;
-    border-bottom: 1.5px solid #16243e;
-    text-transform: uppercase;
-    white-space: nowrap; /* Impede a quebra de linha no cabeçalho */
-}
+            font-size: 10px;
+            font-weight: bold;
+            color: #16243e;
+            padding-bottom: 6px;
+            border-bottom: 1.5px solid #16243e;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
 
         td {
-            padding: 11px 4px;
-            font-size: 14px;
+            padding: 7px 1px;
+            font-size: 11px;
             color: #16243e;
             text-align: center;
             border-bottom: 1px solid #e0e0e0;
@@ -178,9 +174,9 @@ tr.concluido td {
             border-bottom: 1.5px solid #16243e;
         }
 
-        .col-check { width: 22%; }
-        .col-data { width: 48%; }
-        .col-unidade { width: 30%; }
+        .col-check { width: 12%; }
+        .col-data { width: 53%; }
+        .col-unidade { width: 35%; }
 
         /* Painel de Edição Centralizado (Modal) */
         .painel-edicao-overlay {
@@ -256,32 +252,33 @@ tr.concluido td {
 </head>
 <body>
 
-    <!-- Ícones de Ação -->
+    <!-- Ícones de Ação no Topo -->
     <div class="acoes-topo">
+        <a href="index.html" class="btn-icone" title="Voltar para a Página Inicial">🏠</a>
         <button class="btn-icone" id="btn-toggle-painel" title="Editar Dados">⚙️</button>
-        <button class="btn-icone" id="btn-salvar-imagem" title="Salvar Imagem">💾</button>
+        <button class="btn-icone" id="btn-salvar-imagem" title="Salvar Imagem em Tamanho Real">💾</button>
     </div>
 
-    <!-- Moldura de Alumínio + Folha -->
-    <div class="moldura-quadro" id="area-impressao">
-        <div class="folha-container">
+    <!-- Container com Imagem de Fundo (Estilo Miniatura na Tela) -->
+    <div class="area-container" id="area-impressao">
+        <img src="fundo.png" alt="Fundo Quadro" class="bg-imagem" id="img-fundo">
+
+        <!-- Conteúdo desenhado sobre a imagem -->
+        <div class="conteudo-sobreposto">
             
-            <!-- Posicionamento Centralizado da Logo -->
             <div class="logo-container">
                 <img src="logo.png" alt="Logo Residencial Maria de Lourdes" class="logo-img">
             </div>
 
-            <!-- Linha com o Título Intercalado -->
-            <div >
+            <div class="titulo-box">
                 <span class="titulo-texto">CRONOGRAMA DE LIMPEZA DO QUARTO DO LIXO</span>
             </div>
 
-            <!-- Tabela de Dados com Rótulos Atualizados -->
             <div class="tabela-container">
                 <table>
                     <thead>
                         <tr>
-                            <th class="col-check">📋 CHECK</th>
+                            <th class="col-check">📋</th>
                             <th class="col-data">📅 DATAS</th>
                             <th class="col-unidade">🏠 RESPONSÁVEL</th>
                         </tr>
@@ -332,39 +329,38 @@ tr.concluido td {
         }
 
         function atualizarTabela() {
-    const corpoTabela = document.getElementById('corpo-tabela');
-    corpoTabela.innerHTML = '';
+            const corpoTabela = document.getElementById('corpo-tabela');
+            corpoTabela.innerHTML = '';
 
-    // Vetor SVG exato extraído do iconpacks.net/free-icon/check-3278.html
-    const svgCheck3278 = `
-        <svg class="img-check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-            <path fill="#00b074" d="M256,0C114.615,0,0,114.615,0,256s114.615,256,256,256s256-114.615,256-256S397.385,0,256,0z M384.348,197.652
-            l-150.8,150.8c-6.249,6.248-16.379,6.248-22.628,0l-77.268-77.269c-6.249-6.248-6.249-16.379,0-22.627
-            c6.248-6.249,16.379-6.249,22.627,0l65.955,65.955l139.486-139.486c6.248-6.249,16.379-6.249,22.628,0
-            C390.597,181.273,390.597,191.403,384.348,197.652z"/>
-        </svg>
-    `;
+            const svgCheck3278 = `
+                <svg class="img-check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                    <path fill="#00b074" d="M256,0C114.615,0,0,114.615,0,256s114.615,256,256,256s256-114.615,256-256S397.385,0,256,0z M384.348,197.652
+                    l-150.8,150.8c-6.249,6.248-16.379,6.248-22.628,0l-77.268-77.269c-6.249-6.248-6.249-16.379,0-22.627
+                    c6.248-6.249,16.379-6.249,22.627,0l65.955,65.955l139.486-139.486c6.248-6.248,16.379-6.249,22.628,0
+                    C390.597,181.273,390.597,191.403,384.348,197.652z"/>
+                </svg>
+            `;
 
-    dadosIniciais.forEach((item) => {
-        const dataInicio = formatarDataBR(item.data);
-        const dataFim = somarDias(item.data, 4);
-        const intervalo = item.data ? `${dataInicio} a ${dataFim}` : '';
+            dadosIniciais.forEach((item) => {
+                const dataInicio = formatarDataBR(item.data);
+                const dataFim = somarDias(item.data, 4);
+                const intervalo = item.data ? `${dataInicio} a ${dataFim}` : '';
 
-        const tr = document.createElement('tr');
-        if (item.check) tr.classList.add('concluido');
+                const tr = document.createElement('tr');
+                if (item.check) tr.classList.add('concluido');
 
-        tr.innerHTML = `
-            <td>
-                <span class="check-icon-container">
-                    ${item.check ? svgCheck3278 : ''}
-                </span>
-            </td>
-            <td>${intervalo}</td>
-            <td>${item.unidade}</td>
-        `;
-        corpoTabela.appendChild(tr);
-    });
-}
+                tr.innerHTML = `
+                    <td>
+                        <span class="check-icon-container">
+                            ${item.check ? svgCheck3278 : ''}
+                        </span>
+                    </td>
+                    <td>${intervalo}</td>
+                    <td>${item.unidade}</td>
+                `;
+                corpoTabela.appendChild(tr);
+            });
+        }
 
         function construirPainel() {
             const container = document.getElementById('controles-container');
@@ -414,14 +410,22 @@ tr.concluido td {
             }
         });
 
-        // Evento de Salvar Imagem
+        // Evento de Salvar Imagem (Gera em Alta Resolução)
         document.getElementById('btn-salvar-imagem').addEventListener('click', () => {
             overlay.classList.remove('ativo');
             const acoes = document.querySelector('.acoes-topo');
             acoes.style.display = 'none';
 
-            html2canvas(document.getElementById('area-impressao'), { 
-                scale: 2,
+            const areaImpressao = document.getElementById('area-impressao');
+            const imgFundo = document.getElementById('img-fundo');
+
+            // Calcula a proporção baseada na resolução real do arquivo fundo.png
+            const larguraReal = imgFundo.naturalWidth || 1080;
+            const escalaCalculada = larguraReal / areaImpressao.clientWidth;
+
+            // Usa a escala real do arquivo de imagem para exportar em alta definição
+            html2canvas(areaImpressao, { 
+                scale: escalaCalculada > 1 ? escalaCalculada : 3,
                 useCORS: true,
                 backgroundColor: null 
             }).then(canvas => {
