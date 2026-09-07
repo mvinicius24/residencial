@@ -169,10 +169,11 @@ body {
     padding: 10px;
 }
 
+/* Área de Pré-Visualização */
 .area-container {
     position: relative;
     width: 100%;
-    max-height: 100%;
+    aspect-ratio: 1 / 1; /* Mantém a proporção quadrada fixa da moldura */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -183,21 +184,24 @@ body {
 
 .bg-imagem {
     width: 100%;
-    height: auto;
+    height: 100%;
     display: block;
     object-fit: contain;
 }
 
-/* Camada Sobreposta */
+/* Camada Sobreposta Fixa */
 .conteudo-sobreposto {
     position: absolute;
-    top: 10%;
-    left: 11%;
-    width: 78%;
-    height: 80%;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: flex-start;
+    padding-top: 14%; /* Mantém o topo travado proporcionalmente à imagem */
+    box-sizing: border-box;
 }
 
 .check-icon-container {
