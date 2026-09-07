@@ -169,11 +169,10 @@ body {
     padding: 10px;
 }
 
-/* Área de Pré-Visualização */
 .area-container {
     position: relative;
     width: 100%;
-    aspect-ratio: 1 / 1; /* Mantém a proporção quadrada fixa da moldura */
+    max-height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -184,24 +183,21 @@ body {
 
 .bg-imagem {
     width: 100%;
-    height: 100%;
+    height: auto;
     display: block;
     object-fit: contain;
 }
 
-/* Camada Sobreposta Fixa */
+/* Camada Sobreposta */
 .conteudo-sobreposto {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    top: 10%;
+    left: 11%;
+    width: 78%;
+    height: 80%;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
-    padding-top: 22%; /* Aumentado de 14% para 22% para empurrar o conteúdo para baixo */
-    box-sizing: border-box;
 }
 
 .check-icon-container {
@@ -225,9 +221,9 @@ tr.concluido td { color: #00b074; }
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     position: relative;
-    top: 0; /* Zerado para evitar empurrar elementos de forma desalinhada */
+    top: 6px;
 }
 
 .logo-img {
@@ -287,7 +283,7 @@ th {
 }
 
 td {
-    padding: 7px 1px; /* Aumentado de 5px para 7px para expandir a altura da tabela */
+    padding: 5px 1px;
     font-size: 10px;
     color: #16243e;
     text-align: center;
