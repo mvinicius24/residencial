@@ -6,7 +6,7 @@
 <title>Cronograma de Limpeza - Residencial Maria de Lourdes</title>
 <link rel="icon" type="image/png" href="./nav.png">
 
-<!-- Font Awesome oficial + CDN alternativa para garantir o carregamento dos ícones -->
+<!-- Font Awesome oficial + CDN alternativa -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.4.0/css/all.css" crossorigin="anonymous">
 
@@ -38,7 +38,9 @@ body {
     font-family: Arial, sans-serif;
 }
 
-/* Moldura Mobile idêntica ao index.html */
+
+
+/* Moldura Mobile */
 .app-container {
     width: 100%; max-width: 412px; height: 100vh; max-height: 850px;
     background-color: var(--bg-color); padding: 12px 16px; position: relative;
@@ -53,7 +55,8 @@ body {
 /* Cabeçalho */
 .header {
     display: flex;
-    align-items: center;
+    align-items: center;      /* Alinha verticalmente a logo e os textos */
+    justify-content: center;  /* Centraliza o conteúdo dentro do cabeçalho */
     background: white;
     padding: 8px 12px;
     border-radius: 12px;
@@ -89,13 +92,46 @@ body {
     margin: 0;
 }
 
-/* Barra de Ações com os ícones Font Awesome */
+.header-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;      /* Centraliza a segunda linha em relação à primeira */
+    justify-content: center;  
+    flex: 1;
+    gap: 1px;
+}
+
+.header-info p {
+    margin: 0 !important;
+    line-height: 1.1;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--accent-color, #0A369D);
+    text-align: center;       /* Força o alinhamento central em cada linha */
+    width: 100%;
+}
+
+.titulo-linha-1 {
+    font-size: 10px;
+    letter-spacing: 0.4px;
+}
+
+.titulo-linha-2 {
+    font-size: 10px;
+    letter-spacing: 0.4px;
+}
+
+/* Barra de Ações com Fundo Branco */
 .action-bar {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin: 4px 0 8px 0;
-    padding: 0 4px;
+    padding: 8px 12px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
     flex-shrink: 0;
 }
 
@@ -117,7 +153,7 @@ body {
     transform: scale(1.1);
 }
 
-/* Área de Pré-Visualização contendo o fundo.png */
+/* Área de Pré-Visualização */
 .preview-card {
     display: flex;
     flex-direction: column;
@@ -152,7 +188,7 @@ body {
     object-fit: contain;
 }
 
-/* Camada Sobreposta mantendo a posição original dos textos */
+/* Camada Sobreposta */
 .conteudo-sobreposto {
     position: absolute;
     top: 10%;
@@ -185,9 +221,9 @@ tr.concluido td { color: #00b074; }
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-bottom: 10px;
+    margin-bottom: 6px;
     position: relative;
-    top: 10px;
+    top: 6px;
 }
 
 .logo-img {
@@ -196,25 +232,34 @@ tr.concluido td { color: #00b074; }
     display: block;
 }
 
+/* Título em duas linhas centralizadas e destacadas */
 .titulo-box {
     width: 100%;
-    position: relative;
-    margin-top: 6px;
-    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 4px;
+    margin-bottom: 8px;
     text-align: center;
 }
 
-.titulo-texto {
-    padding: 0 4px;
-    font-size: 10px;
-    font-weight: bold;
+.titulo-linha-1 {
+    font-size: 11px;
+    font-weight: 800;
     color: #16243e;
-    position: relative;
-    top: -4px;
-    display: inline-block;
-    letter-spacing: 0.2px;
+    letter-spacing: 0.4px;
     text-transform: uppercase;
-    text-align: center;
+    line-height: 1.2;
+}
+
+.titulo-linha-2 {
+    font-size: 12px;
+    font-weight: 900;
+    color: #16243e;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    line-height: 1.2;
 }
 
 .tabela-container {
@@ -325,14 +370,13 @@ tr:last-child td { border-bottom: 1.5px solid #16243e; }
     <div class="header">
         <img src="logo.png" alt="Residencial Maria de Lourdes" class="header-logo">
         <div class="header-info">
-            <p>CRONOGRAMA DE LIMPEZA</p>
-            <span style="font-size: 10px; font-weight: bold; color: #059669; display: flex; align-items: center; gap: 4px;">
-                <i class="fa-solid fa-broom"></i> QUARTO DO LIXO
-            </span>
-        </div>
+    <p class="titulo-linha-1">CRONOGRAMA DE LIMPEZA</p>
+    <p class="titulo-linha-2">QUARTO DO LIXO</p>
+</div>
     </div>
 
-    <!-- Barra de Ações (Ícones Font Awesome Originais) -->
+
+    <!-- Barra de Ações com Fundo Branco -->
     <div class="action-bar">
         <div class="left-actions">
             <i class="fa-solid fa-house" onclick="window.location.href='index.html'" title="Voltar ao Início"></i>
@@ -343,7 +387,7 @@ tr:last-child td { border-bottom: 1.5px solid #16243e; }
         </div>
     </div>
 
-    <!-- Área de Pré-Visualização com Fundo do Quadro -->
+    <!-- Área de Pré-Visualização -->
     <div class="preview-card">
         <div class="area-container" id="area-impressao">
             <img src="fundo.png" alt="Fundo Quadro" class="bg-imagem" id="img-fundo">
@@ -353,8 +397,10 @@ tr:last-child td { border-bottom: 1.5px solid #16243e; }
                     <img src="logo.png" alt="Logo Residencial Maria de Lourdes" class="logo-img">
                 </div>
 
+                <!-- Título ajustado -->
                 <div class="titulo-box">
-                    <span class="titulo-texto">CRONOGRAMA DE LIMPEZA DO QUARTO DO LIXO</span>
+                    <span class="titulo-linha-1">CRONOGRAMA DE LIMPEZA</span>
+                    <span class="titulo-linha-2">QUARTO DO LIXO</span>
                 </div>
 
                 <div class="tabela-container">
