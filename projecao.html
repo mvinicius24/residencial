@@ -3,251 +3,709 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Residencial Maria de Lourdes - Projeção Financeira</title>
+<title>Projeção Financeira - Residencial Maria de Lourdes</title>
+<link rel="icon" type="image/png" href="./nav.png">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
 <style>
-*{box-sizing:border-box}
-body{margin:0;background:#eef3f7;font-family:Arial,Helvetica,sans-serif;color:#18314f}
-.container{max-width:1200px;margin:auto;padding:14px}
-.panel{background:#fff;border-radius:18px;padding:18px;box-shadow:0 5px 20px #0001}
-.toolbar{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-bottom:12px}
-button{border:0;border-radius:9px;padding:10px 15px;font-weight:bold;cursor:pointer}
-.primary{background:#087f68;color:white}.secondary{background:#e7eff5;color:#123d68}
-.settings{display:none;background:#f5f9fc;border:1px solid #d5e1ea;border-radius:12px;padding:15px;margin-bottom:14px}
-.settings.open{display:block}
-.form{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-label{font-weight:bold;font-size:13px}input{width:100%;margin-top:5px;padding:9px;border:1px solid #bdcedb;border-radius:7px}
-.expenses{margin-top:12px}.expense{display:grid;grid-template-columns:1fr 130px 35px;gap:7px;margin:6px 0}
-.remove{background:#ffe1e1;color:#b00000;padding:5px}
-.canvas-wrap{overflow:auto}
-#dashboard{display:block;width:1160px;height:auto;background:white;border-radius:16px}
-.hint{font-size:12px;color:#65788c;text-align:center;margin-top:8px}
-@media(max-width:700px){.form{grid-template-columns:1fr}.expense{grid-template-columns:1fr 110px 35px}}
+:root {
+    --primary-color: #1E293B;
+    --accent-color: #0A369D;
+    --bg-color: #F8FAFC;
+    --card-bg: #FFFFFF;
+    --border-color: #E2E8F0;
+    --text-secondary: #64748B;
+}
+
+*, *::before, *::after, input, button, select, textarea {
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #E2E8F0;
+    color: var(--primary-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+.app-container {
+    width: 100%; max-width: 412px; height: 100vh; max-height: 850px;
+    background-color: var(--bg-color); padding: 12px 16px; position: relative;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1); display: flex; flex-direction: column;
+    border-radius: 0; overflow: hidden;
+}
+
+@media (min-width: 413px) {
+    .app-container { border-radius: 16px; height: 92vh; max-width: 430px; }
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    padding: 8px 12px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    margin-bottom: 8px;
+    position: relative;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+.header-logo {
+    width: 120px;
+    height: auto;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.header-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    gap: 1px;
+}
+
+.header-info p {
+    margin: 0 !important;
+    line-height: 1.1;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--accent-color, #0A369D);
+    text-align: center;
+    width: 100%;
+}
+
+.titulo-linha-1 { font-size: 10px; letter-spacing: 0.4px; }
+.titulo-linha-2 { font-size: 10px; letter-spacing: 0.4px; }
+
+.action-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 4px 0 8px 0;
+    padding: 8px 12px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    flex-shrink: 0;
+}
+
+.left-actions, .right-actions {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-size: 20px;
+}
+
+.left-actions i, .right-actions i {
+    cursor: pointer;
+    padding: 4px;
+    color: #059669;
+    transition: transform 0.1s ease;
+}
+
+.left-actions i:hover, .right-actions i:hover {
+    transform: scale(1.1);
+}
+
+.preview-card {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    background: var(--card-bg);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+    min-height: 0;
+    position: relative;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+}
+
+.area-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    border-radius: 8px;
+    overflow: hidden;
+    background: white;
+}
+
+#dashboard {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(15, 23, 42, 0.65);
+    backdrop-filter: blur(4px);
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    padding: 16px;
+    animation: fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modal-content {
+    background: #ffffff;
+    padding: 24px;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 540px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--primary-color);
+}
+
+.modal-header h3 i {
+    color: var(--accent-color);
+    background: #eff6ff;
+    padding: 8px;
+    border-radius: 10px;
+    font-size: 14px;
+}
+
+.modal-close-btn {
+    background: #f1f5f9;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: background 0.2s, color 0.2s;
+}
+
+.modal-close-btn:hover {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.modal-body {
+    overflow-y: auto;
+    padding-right: 4px;
+    flex: 1;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.form-group label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.input-with-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-with-icon i {
+    position: absolute;
+    left: 12px;
+    color: var(--text-secondary);
+    font-size: 13px;
+}
+
+.input-with-icon input {
+    width: 100%;
+    padding: 10px 10px 10px 36px;
+    border: 1.5px solid var(--border-color);
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--primary-color);
+    background: #f8fafc;
+    transition: all 0.2s ease;
+}
+
+.input-with-icon input:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(10, 54, 157, 0.1);
+}
+
+.section-block {
+    margin-top: 16px;
+    border-top: 2px dashed var(--border-color);
+    padding-top: 14px;
+}
+
+.section-label {
+    font-size: 12px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--primary-color);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+.sublabel-hint {
+    font-size: 10px;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+    font-style: italic;
+}
+
+.dynamic-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 180px;
+    overflow-y: auto;
+    padding-right: 2px;
+    margin-bottom: 8px;
+}
+
+.row-item {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    background: #f8fafc;
+    padding: 6px;
+    border-radius: 10px;
+    border: 1.5px solid var(--border-color);
+}
+
+.row-item input[type="text"] {
+    flex: 2;
+    padding: 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 12px;
+    background: #ffffff;
+}
+
+.row-item input[type="number"] {
+    flex: 1;
+    min-width: 0;
+    padding: 8px 4px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 12px;
+    background: #ffffff;
+    text-align: center;
+}
+
+.btn-remove {
+    background: #fee2e2;
+    color: #dc2626;
+    border: none;
+    border-radius: 8px;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-weight: bold;
+    flex-shrink: 0;
+    transition: background 0.2s;
+}
+
+.btn-remove:hover { background: #fecaca; }
+
+.modal-footer {
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 2px solid var(--border-color);
+    display: flex;
+    gap: 10px;
+}
+
+.btn {
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 13px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: filter 0.2s, transform 0.1s;
+}
+
+.btn:active { transform: scale(0.98); }
+.btn-save { background: var(--accent-color); color: white; flex: 2; box-shadow: 0 4px 12px rgba(10, 54, 157, 0.2); }
+.btn-secondary { background: #e2e8f0; color: var(--primary-color); flex: 1; }
+.btn-save:hover { filter: brightness(1.1); }
+.btn-secondary:hover { background: #cbd5e1; }
 </style>
 </head>
 <body>
-<div class="container">
-<div class="panel">
-  <div class="toolbar">
-    <button class="secondary" onclick="toggleSettings()">⚙️ Configurar</button>
-    <button class="primary" onclick="render()">🔄 Atualizar</button>
-    <button class="primary" onclick="downloadPNG()">🖼️ GERAR IMAGEM PNG</button>
-  </div>
 
-  <div id="settings" class="settings">
-    <div class="form">
-      <div><label>Saldo atual em caixa</label><input id="balance" type="number" step="0.01"></div>
-      <div><label>Receita mensal</label><input id="income" type="number" step="0.01"></div>
-      <div><label>Nome do residencial</label><input id="condo" type="text"></div>
+<div class="app-container" id="mainAppContainer">
+    <div class="header">
+        <img src="logo.png" alt="Residencial Maria de Lourdes" class="header-logo" onerror="this.style.display='none'">
+        <div class="header-info">
+            <p class="titulo-linha-1">PROJEÇÃO FINANCEIRA</p>
+        </div>
     </div>
-    <div class="expenses">
-      <b>Despesas fixas mensais</b>
-      <div id="expenseList"></div>
-      <button class="secondary" onclick="addExpense()">+ Adicionar despesa</button>
-    </div>
-  </div>
 
-  <div class="canvas-wrap">
-    <svg id="dashboard" viewBox="0 0 1160 850" xmlns="http://www.w3.org/2000/svg"></svg>
-  </div>
-  <div class="hint">A imagem PNG é criada com os valores atuais e pode ser enviada pelo WhatsApp.</div>
+    <div class="action-bar">
+        <div class="left-actions">
+            <i class="fa-solid fa-house" onclick="window.location.href='index.html'" title="Voltar ao Início"></i>
+            <i class="fa-solid fa-print" id="btn-salvar-imagem" title="Baixar Imagem em Paisagem (Banner)"></i>
+        </div>
+        <div class="right-actions">
+            <i class="fa-solid fa-gear" onclick="openModal('painelModal')" title="Configurar Projeção"></i>
+        </div>
+    </div>
+
+    <div class="preview-card">
+        <div class="area-container" id="area-impressao">
+            <svg id="dashboard" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"></svg>
+        </div>
+    </div>
 </div>
+
+<!-- MODAL COM CONTROLE INDEPENDENTE DE VALORES POR MÊS -->
+<div class="modal" id="painelModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3><i class="fa-solid fa-sliders"></i> Configurar Projeção</h3>
+            <button class="modal-close-btn" onclick="closeModal('painelModal')"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        
+        <div class="modal-body">
+            <div class="form-group">
+                <label>Saldo Atual em Caixa</label>
+                <div class="input-with-icon">
+                    <i class="fa-solid fa-wallet"></i>
+                    <input id="balance" type="number" step="0.01">
+                </div>
+            </div>
+            
+            <!-- SEÇÃO DE RECEITAS -->
+            <div class="section-block" style="margin-top: 8px; border-top: none; padding-top: 0;">
+                <div class="section-label" style="color: #087f68;">
+                    <i class="fa-solid fa-arrow-trend-up"></i> Receitas (Mês Atual / Mês Seguinte)
+                </div>
+                <div class="sublabel-hint">Ordem dos campos de valor: [Mês Atual] [Mês Seguinte]</div>
+                <div id="incomesList" class="dynamic-list"></div>
+                <button type="button" class="btn btn-secondary" style="width: 100%;" onclick="addIncomeItem()">
+                    <i class="fa-solid fa-plus"></i> Adicionar Receita
+                </button>
+            </div>
+
+            <!-- SEÇÃO DE DESPESAS -->
+            <div class="section-block">
+                <div class="section-label" style="color: #d71920;">
+                    <i class="fa-solid fa-receipt"></i> Despesas (Mês Atual / Mês Seguinte)
+                </div>
+                <div class="sublabel-hint">Ordem dos campos de valor: [Mês Atual] [Mês Seguinte]</div>
+                <div id="expenseList" class="dynamic-list"></div>
+                <button type="button" class="btn btn-secondary" style="width: 100%;" onclick="addExpenseItem()">
+                    <i class="fa-solid fa-plus"></i> Adicionar Despesa
+                </button>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeModal('painelModal')">Cancelar</button>
+            <button type="button" class="btn btn-save" onclick="salvarEFechar()"><i class="fa-solid fa-check"></i> Salvar Alterações</button>
+        </div>
+    </div>
 </div>
 
 <script>
-const STORAGE='rml_dashboard_v2';
-const defaults={
-  balance:135.40,
-  income:900,
-  condo:'RESIDENCIAL MARIA DE LOURDES',
-  expenses:[
-    {name:'COSERN (média)',value:200,category:'Serviços'},
-    {name:'CAERN (média)',value:150,category:'Serviços'}
+const STORAGE = 'rml_dashboard_v6';
+const defaults = {
+  balance: 135.40,
+  incomes: [
+    {name: 'Taxas das casas', month1: 900, month2: 900}
+  ],
+  expenses: [
+    {name: 'COSERN (média)', month1: 200, month2: 200},
+    {name: 'CAERN (média)', month1: 150, month2: 150}
   ]
 };
-let data=JSON.parse(localStorage.getItem(STORAGE)||'null')||defaults;
+let data = JSON.parse(localStorage.getItem(STORAGE) || 'null') || defaults;
 
-function money(v){
+if (!data.incomes) {
+    data.incomes = [{name: 'Taxas das casas', month1: data.income || 900, month2: data.income || 900}];
+}
+
+let logoBase64 = '';
+const imgLoader = new Image();
+imgLoader.crossOrigin = 'anonymous';
+imgLoader.src = 'logo.png';
+imgLoader.onload = function() {
+    const canvas = document.createElement('canvas');
+    canvas.width = imgLoader.naturalWidth;
+    canvas.height = imgLoader.naturalHeight;
+    canvas.getContext('2d').drawImage(imgLoader, 0, 0);
+    logoBase64 = canvas.toDataURL('image/png');
+    render();
+};
+
+function money(v) {
  return new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(Number(v)||0);
 }
-function esc(s){
+function esc(s) {
  return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&apos;'}[c]));
 }
-function months(){
- const d=new Date();
- return [0,1,2].map(i=>new Date(d.getFullYear(),d.getMonth()+i,1));
+function months() {
+ const d = new Date();
+ return [0, 1].map(i => new Date(d.getFullYear(), d.getMonth() + i, 1));
 }
-function monthLabel(d){
+function monthLabel(d) {
  return d.toLocaleDateString('pt-BR',{month:'long',year:'numeric'}).toUpperCase();
 }
-function totalExpenses(){
- return data.expenses.reduce((a,e)=>a+Number(e.value||0),0);
+
+function totalIncomes(monthIndex) {
+ return data.incomes.reduce((a, e) => a + Number(monthIndex === 0 ? e.month1 : (e.month2 ?? e.month1)), 0);
 }
-function toggleSettings(){
- document.getElementById('settings').classList.toggle('open');
+function totalExpenses(monthIndex) {
+ return data.expenses.reduce((a, e) => a + Number(monthIndex === 0 ? e.month1 : (e.month2 ?? e.month1)), 0);
 }
-function addExpense(){
- data.expenses.push({name:'Nova despesa',value:0,category:'Serviços'});
+
+function openModal(id) {
+    renderInputs();
+    document.getElementById(id).style.display = 'flex';
+}
+function closeModal(id) {
+    document.getElementById(id).style.display = 'none';
+}
+
+function addIncomeItem() {
+ data.incomes.push({name: 'Nova receita', month1: 0, month2: 0});
  renderInputs();
 }
-function removeExpense(i){
- data.expenses.splice(i,1);
+function removeIncomeItem(i) {
+ data.incomes.splice(i, 1);
  renderInputs();
- render();
 }
-function renderInputs(){
- document.getElementById('balance').value=data.balance;
- document.getElementById('income').value=data.income;
- document.getElementById('condo').value=data.condo;
- document.getElementById('expenseList').innerHTML=data.expenses.map((e,i)=>`
- <div class="expense">
-   <input value="${esc(e.name)}" onchange="data.expenses[${i}].name=this.value">
-   <input type="number" step="0.01" value="${Number(e.value).toFixed(2)}" onchange="data.expenses[${i}].value=Number(this.value)">
-   <button class="remove" onclick="removeExpense(${i})">×</button>
+
+function addExpenseItem() {
+ data.expenses.push({name: 'Nova despesa', month1: 0, month2: 0});
+ renderInputs();
+}
+function removeExpenseItem(i) {
+ data.expenses.splice(i, 1);
+ renderInputs();
+}
+
+function renderInputs() {
+ document.getElementById('balance').value = data.balance;
+ 
+ document.getElementById('incomesList').innerHTML = data.incomes.map((e, i) => `
+ <div class="row-item">
+   <input type="text" value="${esc(e.name)}" onchange="data.incomes[${i}].name=this.value" placeholder="Nome da receita">
+   <input type="number" step="0.01" value="${Number(e.month1).toFixed(2)}" onchange="data.incomes[${i}].month1=Number(this.value)" placeholder="M1" title="Valor Mês Atual">
+   <input type="number" step="0.01" value="${Number(e.month2 ?? e.month1).toFixed(2)}" onchange="data.incomes[${i}].month2=Number(this.value)" placeholder="M2" title="Valor Mês Seguinte">
+   <button type="button" class="btn-remove" onclick="removeIncomeItem(${i})" title="Remover"><i class="fa-solid fa-trash-can"></i></button>
+ </div>`).join('');
+
+ document.getElementById('expenseList').innerHTML = data.expenses.map((e, i) => `
+ <div class="row-item">
+   <input type="text" value="${esc(e.name)}" onchange="data.expenses[${i}].name=this.value" placeholder="Nome da despesa">
+   <input type="number" step="0.01" value="${Number(e.month1).toFixed(2)}" onchange="data.expenses[${i}].month1=Number(this.value)" placeholder="M1" title="Valor Mês Atual">
+   <input type="number" step="0.01" value="${Number(e.month2 ?? e.month1).toFixed(2)}" onchange="data.expenses[${i}].month2=Number(this.value)" placeholder="M2" title="Valor Mês Seguinte">
+   <button type="button" class="btn-remove" onclick="removeExpenseItem(${i})" title="Remover"><i class="fa-solid fa-trash-can"></i></button>
  </div>`).join('');
 }
-function save(){
- data.balance=Number(document.getElementById('balance').value)||0;
- data.income=Number(document.getElementById('income').value)||0;
- data.condo=document.getElementById('condo').value||defaults.condo;
- localStorage.setItem(STORAGE,JSON.stringify(data));
+
+function salvarEFechar() {
+ data.balance = Number(document.getElementById('balance').value) || 0;
+ localStorage.setItem(STORAGE, JSON.stringify(data));
+ closeModal('painelModal');
+ render();
 }
-function svgText(x,y,text,size,weight='400',fill='#18314f',anchor='start'){
+
+function svgText(x, y, text, size, weight='400', fill='#18314f', anchor='start') {
  return `<text x="${x}" y="${y}" font-family="Arial,Helvetica,sans-serif" font-size="${size}" font-weight="${weight}" fill="${fill}" text-anchor="${anchor}">${esc(text)}</text>`;
 }
-function rect(x,y,w,h,fill='#fff',stroke='#d9e3eb',r=12){
+function rect(x, y, w, h, fill='#fff', stroke='#d9e3eb', r=10) {
  return `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${r}" fill="${fill}" stroke="${stroke}"/>`;
 }
-function render(){
- save(); renderInputs();
- const svg=document.getElementById('dashboard');
- const ms=months(), gastos=totalExpenses(), result=Number(data.income)-gastos;
- let saldo=data.balance;
- let out='';
- out+=`<rect width="1160" height="850" rx="18" fill="#fff"/>`;
 
- // Header
- out+=svgText(45,38,'RESIDENCIAL',14,'800','#c84b18','start');
- out+=svgText(45,67,'MARIA DE LOURDES',23,'700','#092e67','start');
- out+=svgText(44,110,'⌂⌂⌂',54,'400','#092e67','start');
- out+=`<line x1="285" y1="22" x2="285" y2="125" stroke="#8ba4ba" stroke-width="2"/>`;
- out+=svgText(580,50,'PROJEÇÃO DE RECEITAS E GASTOS',34,'800','#102c36','middle');
- out+=svgText(580,78,'Planejamento para os próximos meses',19,'400','#536a87','middle');
- out+=rect(890,22,235,86,'#fff','#d9e3eb',12);
- out+=svgText(1007,48,'💼  SALDO ATUAL EM CAIXA',14,'400','#18314f','middle');
- out+=svgText(1007,84,money(data.balance),27,'800','#087f68','middle');
+function render() {
+ const svg = document.getElementById('dashboard');
+ const ms = months();
+ let saldo = data.balance;
+ let out = '';
+ 
+ out += `<rect width="1280" height="720" rx="16" fill="#fff"/>`;
 
- // Grid
- const left=18, top=140, labelW=255, gap=10, monthW=279;
- const xs=[left+labelW+gap, left+labelW+gap+monthW+gap, left+labelW+gap+monthW*2+gap*2];
- out+=rect(left,top,labelW,438,'#fff','#d9e3eb',14);
- out+=`<rect x="${left}" y="${top}" width="${labelW}" height="54" rx="14" fill="#064653"/>`;
- out+=svgText(left+labelW/2,top+34,'RESUMO FINANCEIRO',19,'800','#fff','middle');
+ if (logoBase64) {
+     out += `<image href="${logoBase64}" x="40" y="22" width="160" height="75" preserveAspectRatio="xMidYMid meet"/>`;
+ }
+ out += `<line x1="225" y1="22" x2="225" y2="97" stroke="#d9e3eb" stroke-width="2"/>`;
+ 
+ out += svgText(610, 48, 'PROJEÇÃO FINANCEIRA (MÊS ATUAL E SEGUINTE)', 24, '800', '#102c36', 'middle');
+ out += svgText(610, 74, 'Planejamento de curto prazo', 15, '400', '#536a87', 'middle');
+ 
+ out += rect(990, 18, 255, 82, '#fff', '#d9e3eb', 10);
+ out += svgText(1117, 42, '💼  SALDO ATUAL EM CAIXA', 12, '400', '#18314f', 'middle');
+ out += svgText(1117, 75, money(data.balance), 22, '800', '#087f68', 'middle');
 
- const rows=[
-  ['📈','RECEITAS','(Entradas)','#087f68'],
-  ['⬇️','GASTOS','(Saídas)','#d71920'],
-  ['⚖️','RESULTADO','(Receitas - Gastos)','#0d4fb5'],
-  ['💼','SALDO PROJETADO','(Acumulado)','#123e72']
+ const left = 35, top = 120, labelW = 320, gap = 20, monthW = 425;
+ const xs = [left + labelW + gap, left + labelW + gap + monthW + gap];
+ 
+ out += rect(left, top, labelW, 435, '#fff', '#d9e3eb', 12);
+ out += `<rect x="${left}" y="${top}" width="${labelW}" height="45" rx="12" fill="#064653"/>`;
+ out += svgText(left + labelW / 2, top + 28, 'RESUMO FINANCEIRO', 18, '800', '#fff', 'middle');
+
+ const rows = [
+  ['📈', 'RECEITAS', '(Entradas)', '#087f68'],
+  ['⬇️', 'GASTOS', '(Saídas)', '#d71920'],
+  ['⚖️', 'RESULTADO', '(Receitas - Gastos)', '#0d4fb5'],
+  ['💼', 'SALDO PROJETADO', '(Acumulado)', '#123e72']
  ];
- rows.forEach((r,i)=>{
-   const y=top+54+i*96;
-   if(i>0) out+=`<line x1="${left}" y1="${y}" x2="${left+labelW}" y2="${y}" stroke="#d9e3eb"/>`;
-   out+=`<circle cx="${left+43}" cy="${y+48}" r="27" fill="${i===1?'#ffe2e3':i>=2?'#e6efff':'#e1f4eb'}"/>`;
-   out+=svgText(left+43,y+57,r[0],25,'400',r[3],'middle');
-   out+=svgText(left+82,y+43,r[1],17,'800',r[3]);
-   out+=svgText(left+82,y+64,r[2],13,'400','#536a87');
+ rows.forEach((r, i) => {
+   const y = top + 45 + i * 97;
+   if(i > 0) out += `<line x1="${left}" y1="${y}" x2="${left + labelW}" y2="${y}" stroke="#d9e3eb"/>`;
+   out += `<circle cx="${left + 42}" cy="${y + 48}" r="24" fill="${i === 1 ? '#ffe2e3' : i >= 2 ? '#e6efff' : '#e1f4eb'}"/>`;
+   out += svgText(left + 42, y + 56, r[0], 22, '400', r[3], 'middle');
+   out += svgText(left + 82, y + 42, r[1], 16, '800', r[3]);
+   out += svgText(left + 82, y + 62, r[2], 13, '400', '#536a87');
  });
 
- ms.forEach((m,i)=>{
-   const x=xs[i];
-   const actual=i===0;
-   saldo+=result;
-   out+=rect(x,top,monthW,438,'#fff','#d9e3eb',14);
-   out+=`<rect x="${x}" y="${top}" width="${monthW}" height="54" rx="14" fill="${actual?'#0d4aa0':'#087f68'}"/>`;
-   out+=svgText(x+monthW/2,top+31,monthLabel(m),18,'800','#fff','middle');
-   out+=svgText(x+monthW/2,top+48,actual?'(MÊS CORRENTE)':'(PROJEÇÃO)',12,'400','#fff','middle');
+ ms.forEach((m, i) => {
+   const x = xs[i];
+   const actual = (i === 0);
+   const mIncomes = totalIncomes(i);
+   const mExpenses = totalExpenses(i);
+   const mResult = mIncomes - mExpenses;
+   saldo += mResult;
 
-   out+=svgText(x+monthW/2,top+91,money(data.income),21,'800','#087f68','middle');
-   out+=svgText(x+monthW/2,top+112,'(Taxas das casas)',13,'400','#18314f','middle');
-   out+=svgText(x+monthW/2,top+151,money(gastos),21,'800','#d71920','middle');
+   out += rect(x, top, monthW, 435, '#fff', '#d9e3eb', 12);
+   out += `<rect x="${x}" y="${top}" width="${monthW}" height="45" rx="12" fill="${actual ? '#0d4aa0' : '#087f68'}"/>`;
+   out += svgText(x + monthW / 2, top + 27, monthLabel(m), 17, '800', '#fff', 'middle');
+   out += svgText(x + monthW / 2, top + 41, actual ? '(MÊS CORRENTE)' : '(MÊS SEGUINTE)', 11, '400', '#fff', 'middle');
 
-   let ey=top+178;
-   data.expenses.forEach(e=>{
-     out+=svgText(x+13,ey,'• '+e.name,12,'400','#18314f');
-     out+=svgText(x+monthW-13,ey,money(e.value),12,'400','#18314f','end');
-     ey+=19;
+   // Renderiza receitas do mês
+   let currentY = top + 70;
+   data.incomes.forEach(inc => {
+     const val = Number(i === 0 ? inc.month1 : (inc.month2 ?? inc.month1));
+     out += svgText(x + 18, currentY, '• ' + inc.name, 11, '400', '#18314f');
+     out += svgText(x + monthW - 18, currentY, money(val), 11, '400', '#18314f', 'end');
+     currentY += 16;
    });
-   out+=svgText(x+monthW/2,top+284,money(result),22,'800','#0d4fb5','middle');
-   out+=svgText(x+monthW/2,top+305,'(Receitas - Gastos)',13,'400','#18314f','middle');
-   out+=svgText(x+monthW/2,top+369,money(saldo),21,'800','#123e72','middle');
-   out+=svgText(x+monthW/2,top+390,'(Saldo acumulado)',13,'400','#18314f','middle');
- });
+   
+   out += svgText(x + monthW / 2, top + 130, money(mIncomes), 18, '800', '#087f68', 'middle');
 
- // Details
- const detailY=592, introW=255;
- out+=rect(left,detailY,introW,170,'#f8fbfd','#d9e3eb',14);
- out+=svgText(left+22,detailY+42,'📋  DETALHAMENTO',17,'800','#08705d');
- out+=svgText(left+22,detailY+65,'DE GASTOS',17,'800','#08705d');
- out+=svgText(left+22,detailY+87,'(PROJEÇÃO)',14,'400','#08705d');
- out+=`<line x1="${left+22}" y1="${detailY+106}" x2="${left+68}" y2="${detailY+106}" stroke="#08705d" stroke-width="3"/>`;
- out+=svgText(left+22,detailY+133,'Valores estimados com base',13,'400','#536a87');
- out+=svgText(left+22,detailY+153,'nas despesas fixas cadastradas.',13,'400','#536a87');
-
- ms.forEach((m,i)=>{
-   const x=xs[i], y=detailY;
-   out+=rect(x,y,monthW,170,'#fff','#d9e3eb',12);
-   out+=`<rect x="${x}" y="${y}" width="${monthW}" height="36" rx="12" fill="#087f68"/>`;
-   out+=svgText(x+monthW/2,y+24,monthLabel(m),16,'800','#fff','middle');
-   out+=svgText(x+10,y+57,'Descrição',11,'800','#18314f');
-   out+=svgText(x+160,y+57,'Categoria',11,'800','#18314f','middle');
-   out+=svgText(x+269,y+57,'Valor Estimado',11,'800','#18314f','end');
-   data.expenses.forEach((e,j)=>{
-     const yy=y+82+j*24;
-     out+=`<line x1="${x+8}" y1="${yy+7}" x2="${x+monthW-8}" y2="${yy+7}" stroke="#e0e7ed"/>`;
-     out+=svgText(x+10,yy, e.name,10,'400','#18314f');
-     out+=svgText(x+160,yy,e.category||'Serviços',10,'400','#18314f','middle');
-     out+=svgText(x+269,yy,money(e.value),10,'400','#18314f','end');
+   // Renderiza despesas do mês
+   currentY = top + 155;
+   data.expenses.forEach(exp => {
+     const val = Number(i === 0 ? exp.month1 : (exp.month2 ?? exp.month1));
+     out += svgText(x + 18, currentY, '• ' + exp.name, 11, '400', '#18314f');
+     out += svgText(x + monthW - 18, currentY, money(val), 11, '400', '#18314f', 'end');
+     currentY += 16;
    });
-   out+=`<line x1="${x+8}" y1="${y+145}" x2="${x+monthW-8}" y2="${y+145}" stroke="#d9e3eb"/>`;
-   out+=svgText(x+10,y+163,'TOTAL ESTIMADO',11,'800','#111');
-   out+=svgText(x+monthW-10,y+163,money(gastos),12,'800','#d71920','end');
+
+   out += svgText(x + monthW / 2, top + 242, money(mExpenses), 18, '800', '#d71920', 'middle');
+   
+   out += svgText(x + monthW / 2, top + 295, money(mResult), 18, '800', '#0d4fb5', 'middle');
+   out += svgText(x + monthW / 2, top + 312, '(Receitas - Gastos)', 11, '400', '#18314f', 'middle');
+   
+   out += svgText(x + monthW / 2, top + 382, money(saldo), 18, '800', '#123e72', 'middle');
+   out += svgText(x + monthW / 2, top + 399, '(Saldo acumulado)', 11, '400', '#18314f', 'middle');
  });
 
- // Footer
- out+=rect(18,777,1107,55,'#f1faf7','#77cdb9',13);
- out+=svgText(43,811,'💡',26,'400','#08705d');
- out+=svgText(80,802,'IMPORTANTE:',13,'800','#08705d');
- out+=svgText(171,802,'Estas projeções são estimativas baseadas nas informações atuais e podem variar.',12,'400','#18314f');
- out+=svgText(80,823,'Acompanhe os registros para manter o controle financeiro do condomínio.',12,'400','#18314f');
+ out += rect(35, 567, 1210, 40, '#f1faf7', '#77cdb9', 10);
+ out += svgText(50, 592, '💡', 20, '400', '#08705d');
+ out += svgText(80, 591, 'IMPORTANTE: Projeção financeira de curto prazo baseada nas receitas e despesas cadastradas.', 12, '400', '#18314f');
 
- svg.innerHTML=out;
+ svg.innerHTML = out;
 }
-function downloadPNG(){
- render();
- const svg=document.getElementById('dashboard');
- const xml=new XMLSerializer().serializeToString(svg);
- const blob=new Blob([xml],{type:'image/svg+xml;charset=utf-8'});
- const url=URL.createObjectURL(blob);
- const img=new Image();
- img.onload=()=>{
-   const scale=2;
-   const canvas=document.createElement('canvas');
-   canvas.width=1160*scale; canvas.height=850*scale;
-   const ctx=canvas.getContext('2d');
-   ctx.fillStyle='#fff'; ctx.fillRect(0,0,canvas.width,canvas.height);
-   ctx.drawImage(img,0,0,canvas.width,canvas.height);
-   URL.revokeObjectURL(url);
-   canvas.toBlob(b=>{
-     const a=document.createElement('a');
-     a.href=URL.createObjectURL(b);
-     const d=new Date();
-     a.download='projecao_financeira_'+String(d.getMonth()+1).padStart(2,'0')+'-'+d.getFullYear()+'.png';
-     a.click();
-     setTimeout(()=>URL.revokeObjectURL(a.href),1000);
-   },'image/png');
- };
- img.src=url;
-}
+
+document.getElementById('btn-salvar-imagem').addEventListener('click', () => {
+    const svgElement = document.getElementById('dashboard');
+    const svgString = new XMLSerializer().serializeToString(svgElement);
+    const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+    const URL = window.URL || window.webkitURL || window;
+    const blobURL = URL.createObjectURL(svgBlob);
+    
+    const image = new Image();
+    image.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = 1280;
+        canvas.height = 720;
+        const context = canvas.getContext('2d');
+        context.fillStyle = '#ffffff';
+        context.fillRect(0, 0, canvas.width, canvas.height);
+        context.drawImage(image, 0, 0, 1280, 720);
+        
+        const png = canvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        const d = new Date();
+        link.download = `projecao_financeira_${String(d.getMonth()+1).padStart(2,'0')}-${d.getFullYear()}.png`;
+        link.href = png;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(blobURL);
+    };
+    image.src = blobURL;
+});
+
 render();
 </script>
 </body>
